@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Package, ShoppingCart, Euro, TrendingUp, AlertCircle } from 'lucide-react';
+import { Users, Package, ShoppingCart, Euro, TrendingUp, AlertCircle, UserPlus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import type { Producer, Order } from '../../lib/types';
 import { formatPrice, formatDate } from '../../lib/utils';
@@ -59,7 +59,11 @@ export default function AdminDashboard() {
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-6">Tableau de bord</h1>
 
       {/* Quick nav */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+        <Link to="/admin/ajouter-producteur" className="btn-primary text-center py-2">
+          <UserPlus className="h-4 w-4 mx-auto mb-1" />
+          <span className="text-xs">Ajouter producteur</span>
+        </Link>
         <Link to="/admin/produits" className="btn-secondary text-center py-2">
           <Package className="h-4 w-4 mx-auto mb-1" />
           <span className="text-xs">Produits</span>

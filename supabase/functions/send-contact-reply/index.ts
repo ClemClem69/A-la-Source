@@ -3,7 +3,7 @@ import { Resend } from 'npm:resend@4.0.0';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
-const sender = Deno.env.get('CONTACT_FROM_EMAIL') || 'A la Source <onboarding@resend.dev>';
+const sender = Deno.env.get('CONTACT_FROM_EMAIL') || 'Mon marché futé <contact@monmarchefute.com>';
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') || '',
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '',
@@ -53,7 +53,7 @@ serve(async (request) => {
       from: sender,
       to: recipientEmail,
       subject: `Réponse à votre message : ${subject}`,
-      text: `Bonjour ${recipientName || ''},\n\n${reply}\n\nL'équipe A la Source`,
+      text: `Bonjour ${recipientName || ''},\n\n${reply}\n\nL'équipe Mon marché futé`,
     });
 
     if (error) return jsonResponse({ error: error.message }, 500);

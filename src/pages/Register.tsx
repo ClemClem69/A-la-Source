@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Leaf, Mail, Lock, User, ArrowRight, Tractor, ShoppingBag } from 'lucide-react';
+import { Leaf, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import type { UserRole } from '../lib/types';
 
 export default function Register() {
   const { signUp } = useAuth();
@@ -11,7 +10,6 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState<UserRole>('consumer');
   const [error, setError] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,7 +23,7 @@ export default function Register() {
 
     setError(null);
     setLoading(true);
-    const { error, needsConfirmation } = await signUp(email, password, fullName, role);
+    const { error, needsConfirmation } = await signUp(email, password, fullName);
     if (error) {
       setError(error);
       setLoading(false);
@@ -59,33 +57,6 @@ export default function Register() {
           </div>
         ) : (
         <form onSubmit={handleSubmit} className="card p-6 space-y-4">
-          {/* Role selector */}
-          <div>
-            <label className="label">Je suis...</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setRole('consumer')}
-                className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-all ${
-                  role === 'consumer' ? 'border-primary-500 bg-primary-50' : 'border-stone-200 hover:border-stone-300'
-                }`}
-              >
-                <ShoppingBag className={`h-5 w-5 ${role === 'consumer' ? 'text-primary-600' : 'text-stone-400'}`} />
-                <span className="text-sm font-medium text-stone-700">Consommateur</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole('producer')}
-                className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-all ${
-                  role === 'producer' ? 'border-primary-500 bg-primary-50' : 'border-stone-200 hover:border-stone-300'
-                }`}
-              >
-                <Tractor className={`h-5 w-5 ${role === 'producer' ? 'text-primary-600' : 'text-stone-400'}`} />
-                <span className="text-sm font-medium text-stone-700">Producteur</span>
-              </button>
-            </div>
-          </div>
-
           <div>
             <label className="label">Nom complet</label>
             <div className="relative">
@@ -154,11 +125,6 @@ export default function Register() {
             <ArrowRight className="h-4 w-4" />
           </button>
 
-          {role === 'producer' && (
-            <p className="text-xs text-stone-500 text-center">
-              Votre compte producteur sera validé par un administrateur avant activation.
-            </p>
-          )}
         </form>
         )}
 

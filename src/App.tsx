@@ -38,6 +38,8 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminPricing from './pages/admin/AdminPricing';
 import AdminMessages from './pages/admin/AdminMessages';
+import AdminEvents from './pages/admin/AdminEvents';
+import AdminProducerAccount from './pages/admin/AdminProducerAccount';
 import { useAuth } from './contexts/AuthContext';
 
 function ScrollToTop() {
@@ -97,6 +99,7 @@ function App() {
                 <Route path="/mentions-legales" element={<StaticPage page="legal" />} />
                 <Route path="/confidentialite" element={<StaticPage page="privacy" />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/devenir-producteur" element={<StaticPage page="producer" />} />
 
                 {/* Consumer routes */}
                 <Route path="/panier" element={
@@ -144,6 +147,12 @@ function App() {
                 } />
                 <Route path="/admin/messagerie" element={
                   <ProtectedRoute roles={['admin']}><AdminMessages /></ProtectedRoute>
+                } />
+                <Route path="/admin/evenements" element={
+                  <ProtectedRoute roles={['admin']}><AdminEvents /></ProtectedRoute>
+                } />
+                <Route path="/admin/ajouter-producteur" element={
+                  <ProtectedRoute roles={['admin']}><AdminProducerAccount /></ProtectedRoute>
                 } />
 
                 {/* Fallback */}

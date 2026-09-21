@@ -99,7 +99,7 @@ export default function ProducerSignup() {
           <Leaf className="h-7 w-7 text-white" />
         </div>
         <h1 className="font-serif text-3xl font-bold text-stone-800">Créer ma fiche producteur</h1>
-        <p className="text-stone-500 mt-2">Complétez votre dossier pour rejoindre la marketplace A la Source.</p>
+        <p className="text-stone-500 mt-2">Complétez votre dossier pour rejoindre la marketplace Mon marché futé.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="grid gap-6 rounded-xl bg-white border border-stone-200 p-6 shadow-sm">

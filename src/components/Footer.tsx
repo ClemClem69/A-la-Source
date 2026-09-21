@@ -14,7 +14,7 @@ export default function Footer() {
                   <Leaf className="h-4 w-4 text-primary-900 drop-shadow-sm" />
                 </div>
               </div>
-              <span className="font-serif text-base font-bold text-white">A la Source</span>
+              <span className="font-serif text-base font-bold text-white">Mon marché futé</span>
             </div>
             <p className="text-sm text-primary-200 leading-relaxed">
               La plateforme qui connecte directement les producteurs français aux consommateurs pour des produits frais et sans intermédiaires.
@@ -40,13 +40,14 @@ export default function Footer() {
               <li><Link to="/engagements" className="hover:text-white transition-colors">Nos engagements</Link></li>
               <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
               <li><Link to="/contact" className="hover:text-white transition-colors">Contactez-nous</Link></li>
+              <li><Link to="/devenir-producteur" className="hover:text-white transition-colors">Vendre sur le site</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="mt-8 pt-8 border-t border-primary-800">
           <p className="text-center text-sm text-primary-300">
-            © {new Date().getFullYear()} A la Source. Vente directe, qualité, fraîcheur.
+            © {new Date().getFullYear()} Mon marché futé. Vente directe, qualité, fraîcheur.
           </p>
         </div>
       </div>

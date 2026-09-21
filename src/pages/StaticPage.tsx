@@ -1,7 +1,8 @@
 import { Leaf, Truck, Shield, Heart, MapPin, CreditCard, Package } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface StaticPageProps {
-  page: 'about' | 'how-it-works' | 'engagements' | 'faq' | 'cgv' | 'legal' | 'privacy';
+  page: 'about' | 'how-it-works' | 'engagements' | 'faq' | 'cgv' | 'legal' | 'privacy' | 'producer';
 }
 
 export default function StaticPage({ page }: StaticPageProps) {
@@ -17,6 +18,21 @@ export default function StaticPage({ page }: StaticPageProps) {
 
 function getContent(page: string) {
   switch (page) {
+    case 'producer':
+      return {
+        title: 'Vendre sur Mon marché futé',
+        body: (
+          <div className="space-y-6">
+            <p className="text-stone-600 text-lg leading-relaxed">
+              Vous souhaitez proposer vos produits sur Mon marché futé ? Pour demander à vendre sur le site, contactez-nous via le formulaire dédié.
+            </p>
+            <p className="text-stone-600 text-lg leading-relaxed">
+              Notre équipe reprendra contact avec vous afin d'échanger sur votre exploitation, vos produits et l'ensemble des modalités de référencement et de vente sur la plateforme.
+            </p>
+            <Link to="/contact" className="btn-primary inline-flex">Accéder au formulaire de contact</Link>
+          </div>
+        ),
+      };
     case 'about':
       return {
         title: 'Qui sommes-nous ?',
@@ -25,7 +41,7 @@ function getContent(page: string) {
             <div>
               <h2 className="text-2xl font-semibold text-stone-800 mb-4">Notre mission</h2>
               <p className="text-stone-600 text-lg leading-relaxed">
-                A la Source est une plateforme de vente directe qui connecte les producteurs français aux consommateurs. Notre objectif : simplifier l'accès aux produits frais, de qualité, issus d'une agriculture rémunérée plus équitablement.
+                Mon marché futé est une plateforme de vente directe qui connecte les producteurs français aux consommateurs. Notre objectif : simplifier l'accès aux produits frais, de qualité, issus d'une agriculture rémunérée plus équitablement.
               </p>
             </div>
 
@@ -78,9 +94,9 @@ function getContent(page: string) {
             </div>
 
             <div>
-              <h2 className="text-2xl font-semibold text-stone-800 mb-4">Pourquoi A la Source ?</h2>
+              <h2 className="text-2xl font-semibold text-stone-800 mb-4">Pourquoi Mon marché futé ?</h2>
               <p className="text-stone-600 text-lg leading-relaxed">
-                Parce que la qualité commence à la source. C'est là où le producteur fait ses choix d'agriculture, c'est là où la fraîcheur commence. En nous mettant en relation directe, nous évoluons ensemble vers une agriculture plus juste.
+                Parce que Mon marché futé vous permet de choisir des produits frais directement auprès de producteurs français, tout en garantissant une rémunération plus juste. Vous consommez mieux, en toute transparence, et soutenez une agriculture locale et durable.
               </p>
             </div>
           </div>
@@ -164,7 +180,6 @@ function getContent(page: string) {
               { q: 'Quels sont les créneaux de retrait ?', a: 'Les commandes sont disponibles selon le créneau que vous choisissez lors de la commande. Les créneaux proposés dépendent des points de retrait disponibles.' },
               { q: 'Puis-je modifier ou annuler ma commande ?', a: 'Vous pouvez annuler votre commande tant qu\'elle n\'a pas le statut "en préparation". Contactez le producteur via la messagerie pour toute modification.' },
               { q: 'Les produits sont-ils bio ?', a: 'Chaque producteur indique ses certifications (Bio, HVE, etc.) sur sa fiche. Vous pouvez filtrer le catalogue pour n\'afficher que les produits bio.' },
-              { q: 'Comment devenir producteur sur la plateforme ?', a: 'Inscrivez-vous en choisissant le rôle "Producteur", remplissez le formulaire de candidature. Votre compte sera validé par notre équipe avant activation.' },
               { q: 'Quels sont les modes de paiement acceptés ?', a: 'Nous acceptons les paiements par carte bancaire via Stripe, en toute sécurité. Vos données bancaires ne sont jamais stockées.' },
             ].map((item, i) => (
               <div key={i} className="card p-4">
@@ -180,7 +195,7 @@ function getContent(page: string) {
         title: 'Conditions générales de vente',
         body: (
           <div className="space-y-4 text-stone-600">
-            <p><strong>Article 1 - Objet :</strong> Les présentes CGV régissent les ventes de produits effectuées sur la plateforme "A la Source".</p>
+            <p><strong>Article 1 - Objet :</strong> Les présentes CGV régissent les ventes de produits effectuées sur la plateforme "Mon marché futé".</p>
             <p><strong>Article 2 - Commandes :</strong> Toute commande implique l'acceptation des présentes CGV. La plateforme fait office d'intermédiaire entre le consommateur et le producteur.</p>
             <p><strong>Article 3 - Prix :</strong> Les prix sont indiqués en euros, toutes taxes comprises. Une commission de 10% est prélevée par la plateforme sur chaque vente.</p>
             <p><strong>Article 4 - Paiement :</strong> Le paiement s'effectue par carte bancaire via Stripe, prestataire de paiement sécurisé. Le paiement est requis à la commande.</p>
@@ -196,8 +211,8 @@ function getContent(page: string) {
         title: 'Mentions légales',
         body: (
           <div className="space-y-4 text-stone-600">
-            <p><strong>Éditeur :</strong> A la Source</p>
-            <p><strong>Directeur de publication :</strong> L'équipe d'A la Source</p>
+            <p><strong>Éditeur :</strong> Mon marché futé</p>
+            <p><strong>Directeur de publication :</strong> L'équipe de Mon marché futé</p>
             <p><strong>Hébergement :</strong> Bolt - Plateforme de déploiement</p>
             <p><strong>SIRET :</strong> En cours d'immatriculation</p>
             <p className="text-sm text-stone-400 mt-6">Document à valeur indicative pour cette démonstration.</p>

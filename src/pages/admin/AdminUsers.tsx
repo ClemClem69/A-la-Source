@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { Profile, UserRole } from '../../lib/types';
 import { formatDate } from '../../lib/utils';
+import AdminBackButton from '../../components/AdminBackButton';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState<Profile[]>([]);
@@ -29,6 +30,7 @@ export default function AdminUsers() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <AdminBackButton />
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-6">Utilisateurs</h1>
 
       <div className="flex gap-2 mb-6">

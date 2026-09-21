@@ -3,6 +3,7 @@ import { Star, Package, DollarSign } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import type { Product, Producer } from '../../lib/types';
 import { formatPrice, formatUnit, formatDate } from '../../lib/utils';
+import AdminBackButton from '../../components/AdminBackButton';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -42,6 +43,7 @@ export default function AdminProducts() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <AdminBackButton />
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-6">Modération des produits</h1>
 
       {/* Pricing Info */}

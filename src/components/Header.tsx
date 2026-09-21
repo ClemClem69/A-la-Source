@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import { ShoppingCart, Menu, X, User, LogOut, LayoutDashboard, Leaf, Mail } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut, LayoutDashboard, Leaf, Mail, Activity } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 
@@ -35,7 +35,7 @@ export default function Header() {
               <Leaf className="h-5 w-5 text-primary-900 drop-shadow-sm" />
             </div>
             <span className="font-serif text-lg font-bold text-primary-800 hidden sm:block">
-              A la Source
+              Mon marché futé
             </span>
           </Link>
 
@@ -132,11 +132,25 @@ export default function Header() {
                               <LayoutDashboard className="h-4 w-4" /> Administration
                             </Link>
                             <Link
+                              to="/admin/ajouter-producteur"
+                              onClick={() => setUserMenuOpen(false)}
+                              className="flex items-center gap-2 px-4 py-2 text-sm text-stone-700 hover:bg-stone-50"
+                            >
+                              <User className="h-4 w-4" /> Ajouter un producteur
+                            </Link>
+                            <Link
                               to="/admin/messagerie"
                               onClick={() => setUserMenuOpen(false)}
                               className="flex items-center gap-2 px-4 py-2 text-sm text-stone-700 hover:bg-stone-50"
                             >
                               <Mail className="h-4 w-4" /> Messagerie
+                            </Link>
+                            <Link
+                              to="/admin/evenements"
+                              onClick={() => setUserMenuOpen(false)}
+                              className="flex items-center gap-2 px-4 py-2 text-sm text-stone-700 hover:bg-stone-50"
+                            >
+                              <Activity className="h-4 w-4" /> Évènements
                             </Link>
                           </>
                         )}

@@ -3,6 +3,7 @@ import { Check, X, MapPin, BadgeCheck } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import type { Producer, ProducerStatus } from '../../lib/types';
 import { formatDate } from '../../lib/utils';
+import AdminBackButton from '../../components/AdminBackButton';
 
 export default function AdminProducers() {
   const [producers, setProducers] = useState<Producer[]>([]);
@@ -36,6 +37,7 @@ export default function AdminProducers() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <AdminBackButton />
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-6">Gestion des producteurs</h1>
 
       {/* Filter */}

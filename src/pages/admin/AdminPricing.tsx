@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Package, X, Check } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Product, Producer } from '../../lib/types';
+import type { Product } from '../../lib/types';
 import { formatPrice, formatUnit, formatDate } from '../../lib/utils';
+import AdminBackButton from '../../components/AdminBackButton';
 
 export default function AdminPricing() {
   const { profile } = useAuth();
@@ -95,6 +96,7 @@ export default function AdminPricing() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <AdminBackButton />
       <div className="mb-6">
         <h1 className="font-serif text-3xl font-bold text-stone-800 mb-2">Gestion des tarifs</h1>
         <p className="text-stone-600">Définissez le prix consommateur de chaque produit</p>

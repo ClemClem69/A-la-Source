@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Mail, Send, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import AdminBackButton from '../../components/AdminBackButton';
 
 interface ContactMessage {
   id: string;
@@ -98,6 +99,7 @@ export default function AdminMessages() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <AdminBackButton />
       <div className="mb-6">
         <h1 className="font-serif text-3xl font-bold text-stone-800">Messagerie</h1>
         <p className="text-stone-600 mt-1">Consultez les messages reçus via la page Contactez-nous et répondez directement.</p>
