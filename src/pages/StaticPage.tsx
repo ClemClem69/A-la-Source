@@ -1,5 +1,6 @@
 import { Leaf, Truck, Shield, Heart, MapPin, CreditCard, Package } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import NewsletterSignup from '../components/NewsletterSignup';
 
 interface StaticPageProps {
   page: 'about' | 'how-it-works' | 'engagements' | 'faq' | 'cgv' | 'legal' | 'privacy' | 'producer';
@@ -12,6 +13,11 @@ export default function StaticPage({ page }: StaticPageProps) {
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-6">{content.title}</h1>
       <div className="prose prose-stone max-w-none">{content.body}</div>
+      {page === 'about' && (
+        <div className="mt-10">
+          <NewsletterSignup />
+        </div>
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import type { Product, Producer } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 import ProducerCard from '../components/ProducerCard';
+import NewsletterSignup from '../components/NewsletterSignup';
 import { getCurrentSeason } from '../lib/utils';
 
 export default function Home() {
@@ -163,6 +164,10 @@ export default function Home() {
             <ProducerCard key={producer.id} producer={producer} />
           ))}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pb-16">
+        <NewsletterSignup />
       </section>
     </div>
   );

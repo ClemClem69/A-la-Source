@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Package, ShoppingCart, Euro, TrendingUp, AlertCircle, UserPlus } from 'lucide-react';
+import { Users, Package, ShoppingCart, Euro, TrendingUp, AlertCircle, UserPlus, Newspaper } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Producer, Order } from '../../lib/types';
 import { formatPrice, formatDate } from '../../lib/utils';
 
 export default function AdminDashboard() {
+  const { profile } = useAuth();
+  const canPublishNews = profile?.email === 'ledclement341@gmail.com';
   const [stats, setStats] = useState({
     consumers: 0,
     producers: 0,
@@ -59,7 +62,7 @@ export default function AdminDashboard() {
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-6">Tableau de bord</h1>
 
       {/* Quick nav */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
         <Link to="/admin/ajouter-producteur" className="btn-primary text-center py-2">
           <UserPlus className="h-4 w-4 mx-auto mb-1" />
           <span className="text-xs">Ajouter producteur</span>
@@ -80,6 +83,12 @@ export default function AdminDashboard() {
           <ShoppingCart className="h-4 w-4 mx-auto mb-1" />
           <span className="text-xs">Utilisateurs</span>
         </Link>
+        {canPublishNews && (
+          <Link to="/admin/actualites" className="btn-secondary text-center py-2">
+            <Newspaper className="h-4 w-4 mx-auto mb-1" />
+            <span className="text-xs">Actualités</span>
+          </Link>
+        )}
       </div>
 
       {/* Stats */}

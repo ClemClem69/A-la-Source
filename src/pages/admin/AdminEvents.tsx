@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Activity, Filter, Package, ShoppingCart, Trash2, UserPlus, Users } from 'lucide-react';
+import { Activity, Filter, Mail, Package, ShoppingCart, Trash2, UserPlus, Users } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { formatDateTime } from '../../lib/utils';
 import AdminBackButton from '../../components/AdminBackButton';
+import { useAuth } from '../../contexts/AuthContext';
 
 type EventFilter = 'all' | 'account' | 'producer' | 'product' | 'order';
 
@@ -14,6 +15,12 @@ interface AuditEvent {
   title: string;
   details: Record<string, unknown>;
   created_at: string;
+}
+
+interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  subscribed_at: string;
 }
 
 const filters: Array<{ value: EventFilter; label: string }> = [
@@ -50,26 +57,42 @@ function getEventDescription(event: AuditEvent) {
 }
 
 export default function AdminEvents() {
+  const { profile } = useAuth();
+  const canViewSubscribers = profile?.email.toLowerCase() === 'ledclement341@gmail.com';
   const [events, setEvents] = useState<AuditEvent[]>([]);
+  const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [filter, setFilter] = useState<EventFilter>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [subscribersError, setSubscribersError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadEvents() {
-      const { data, error: loadError } = await supabase
-        .from('audit_events')
-        .select('id, event_type, entity_type, entity_id, title, details, created_at')
-        .order('created_at', { ascending: false })
-        .limit(250);
+      const [eventsResult, subscribersResult] = await Promise.all([
+        supabase
+          .from('audit_events')
+          .select('id, event_type, entity_type, entity_id, title, details, created_at')
+          .order('created_at', { ascending: false })
+          .limit(250),
+        canViewSubscribers
+          ? supabase
+              .from('newsletter_subscribers')
+              .select('id, email, subscribed_at')
+              .order('subscribed_at', { ascending: false })
+          : Promise.resolve(null),
+      ]);
 
-      if (loadError) setError(loadError.message);
-      setEvents((data as AuditEvent[]) || []);
+      if (eventsResult.error) setError(eventsResult.error.message);
+      setEvents((eventsResult.data as AuditEvent[]) || []);
+      if (subscribersResult) {
+        if (subscribersResult.error) setSubscribersError(subscribersResult.error.message);
+        setSubscribers((subscribersResult.data as NewsletterSubscriber[]) || []);
+      }
       setLoading(false);
     }
 
     loadEvents();
-  }, []);
+  }, [canViewSubscribers]);
 
   const filteredEvents = filter === 'all' ? events : events.filter((event) => event.entity_type === filter);
 
@@ -127,6 +150,37 @@ export default function AdminEvents() {
             );
           })}
         </div>
+      )}
+
+      {canViewSubscribers && (
+        <section className="mt-10" aria-labelledby="newsletter-subscribers-title">
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <div>
+              <h2 id="newsletter-subscribers-title" className="font-serif text-2xl font-bold text-stone-800">Inscriptions à la newsletter</h2>
+              <p className="mt-1 text-sm text-stone-600">{subscribers.length} inscription{subscribers.length > 1 ? 's' : ''}</p>
+            </div>
+            <Mail className="h-7 w-7 text-primary-600" aria-hidden="true" />
+          </div>
+
+          {subscribersError && (
+            <p role="alert" className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+              Impossible de charger les inscriptions : {subscribersError}
+            </p>
+          )}
+
+          {subscribers.length === 0 ? (
+            <div className="card p-8 text-center text-stone-500">Aucune inscription à la newsletter pour le moment.</div>
+          ) : (
+            <div className="card divide-y divide-stone-100 overflow-hidden">
+              {subscribers.map((subscriber) => (
+                <div key={subscriber.id} className="flex flex-col gap-1 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+                  <p className="font-medium text-stone-800">{subscriber.email}</p>
+                  <p className="text-xs text-stone-500">Inscription le {formatDateTime(subscriber.subscribed_at)}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import { ShoppingCart, Menu, X, User, LogOut, LayoutDashboard, Leaf, Mail, Activity } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, LogOut, LayoutDashboard, Leaf, Mail, Activity, Newspaper } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 
@@ -16,8 +16,14 @@ export default function Header() {
     { to: '/', label: 'Accueil' },
     { to: '/catalogue', label: 'Catalogue' },
     { to: '/producteurs', label: 'Producteurs' },
+    { to: '/actualites', label: 'Actualités' },
     { to: '/qui-sommes-nous', label: 'Qui sommes-nous ?' },
   ];
+
+  function isActive(to: string) {
+    if (to === '/') return location.pathname === '/';
+    return location.pathname === to || location.pathname.startsWith(`${to}/`);
+  }
 
   function handleSignOut() {
     signOut();
@@ -46,7 +52,7 @@ export default function Header() {
                 key={link.to}
                 to={link.to}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  location.pathname === link.to
+                  isActive(link.to)
                     ? 'text-primary-700 bg-primary-50'
                     : 'text-stone-600 hover:text-primary-700 hover:bg-stone-50'
                 }`}
@@ -152,6 +158,15 @@ export default function Header() {
                             >
                               <Activity className="h-4 w-4" /> Évènements
                             </Link>
+                            {profile.email === 'ledclement341@gmail.com' && (
+                              <Link
+                                to="/admin/actualites"
+                                onClick={() => setUserMenuOpen(false)}
+                                className="flex items-center gap-2 px-4 py-2 text-sm text-stone-700 hover:bg-stone-50"
+                              >
+                                <Newspaper className="h-4 w-4" /> Publier une actualité
+                              </Link>
+                            )}
                           </>
                         )}
                         <button
@@ -196,7 +211,7 @@ export default function Header() {
                   to={link.to}
                   onClick={() => setMenuOpen(false)}
                   className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                    location.pathname === link.to
+                    isActive(link.to)
                       ? 'text-primary-700 bg-primary-50'
                       : 'text-stone-600 hover:bg-stone-50'
                   }`}

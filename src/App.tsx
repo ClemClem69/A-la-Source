@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Navigate, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Routes, Route, useLocation, useParams } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
@@ -18,6 +18,8 @@ import Register from './pages/Register';
 import ResetPassword from './pages/ResetPassword';
 import StaticPage from './pages/StaticPage';
 import Contact from './pages/Contact';
+import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
 
 // Consumer pages
 import Cart from './pages/Cart';
@@ -40,6 +42,7 @@ import AdminPricing from './pages/admin/AdminPricing';
 import AdminMessages from './pages/admin/AdminMessages';
 import AdminEvents from './pages/admin/AdminEvents';
 import AdminProducerAccount from './pages/admin/AdminProducerAccount';
+import AdminNews from './pages/admin/AdminNews';
 import { useAuth } from './contexts/AuthContext';
 
 function ScrollToTop() {
@@ -50,6 +53,11 @@ function ScrollToTop() {
   }, [pathname]);
 
   return null;
+}
+
+function BlogRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`/actualites/${slug}`} replace />;
 }
 
 function NonProducerRoute({ children }: { children: ReactNode }) {
@@ -86,6 +94,10 @@ function App() {
                 <Route path="/produit/:id" element={<ProductDetail />} />
                 <Route path="/producteurs" element={<Producers />} />
                 <Route path="/producteur/:id" element={<ProducerDetail />} />
+                <Route path="/actualites" element={<Blog />} />
+                <Route path="/actualites/:slug" element={<BlogDetail />} />
+                <Route path="/blog" element={<Navigate to="/actualites" replace />} />
+                <Route path="/blog/:slug" element={<BlogRedirect />} />
                 <Route path="/connexion" element={<Login />} />
                 <Route path="/inscription" element={<Register />} />
                 <Route path="/mot-de-passe-oublie" element={<ResetPassword />} />
@@ -153,6 +165,9 @@ function App() {
                 } />
                 <Route path="/admin/ajouter-producteur" element={
                   <ProtectedRoute roles={['admin']}><AdminProducerAccount /></ProtectedRoute>
+                } />
+                <Route path="/admin/actualites" element={
+                  <ProtectedRoute roles={['admin']}><AdminNews /></ProtectedRoute>
                 } />
 
                 {/* Fallback */}

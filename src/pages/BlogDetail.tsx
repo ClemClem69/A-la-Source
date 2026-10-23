@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { BlogPost } from '../lib/types';
 import { formatDate } from '../lib/utils';
+import NewsletterSignup from '../components/NewsletterSignup';
 
 export default function BlogDetail() {
   const { slug } = useParams();
@@ -16,6 +17,7 @@ export default function BlogDetail() {
         .from('blog_posts')
         .select('*')
         .eq('slug', slug)
+        .not('published_at', 'is', null)
         .maybeSingle();
       setPost(data as BlogPost | null);
       setLoading(false);
@@ -35,15 +37,15 @@ export default function BlogDetail() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">
         <p className="text-stone-500">Article introuvable.</p>
-        <Link to="/blog" className="btn-primary mt-4">Voir tous les articles</Link>
+        <Link to="/actualites" className="btn-primary mt-4">Voir toutes les actualités</Link>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
-      <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mb-4">
-        <ArrowLeft className="h-4 w-4" /> Tous les articles
+      <Link to="/actualites" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mb-4">
+        <ArrowLeft className="h-4 w-4" /> Toutes les actualités
       </Link>
 
       {post.image_url && (
@@ -58,6 +60,10 @@ export default function BlogDetail() {
 
       <div className="prose prose-stone max-w-none">
         <pre className="whitespace-pre-wrap font-sans text-stone-700 leading-relaxed">{post.content}</pre>
+      </div>
+
+      <div className="mt-10">
+        <NewsletterSignup />
       </div>
     </div>
   );
