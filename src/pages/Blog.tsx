@@ -4,6 +4,8 @@ import { Newspaper } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { BlogPost } from '../lib/types';
 import { formatDate } from '../lib/utils';
+import { Helmet } from "react-helmet-async";
+
 
 export default function Blog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -23,6 +25,15 @@ export default function Blog() {
   }, []);
 
   return (
+    <>
+    <Helmet>
+  <title>Actualités, produits de saison et conseils | Mon Marché Futé</title>
+  <meta
+    name="description"
+    content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme."
+  />
+  <link rel="canonical" href="https://monmarchefute.com/actualites" />
+    </Helmet>
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-2">Actualités</h1>
       <p className="text-stone-500 mb-8">Nouveautés, conseils et histoires de nos producteurs.</p>
@@ -57,5 +68,6 @@ export default function Blog() {
         </div>
       )}
     </div>
+    </>
   );
 }

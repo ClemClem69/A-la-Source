@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import type { BlogPost } from '../lib/types';
 import { formatDate } from '../lib/utils';
 import NewsletterSignup from '../components/NewsletterSignup';
 
+function stripHtml(value: string): string {
+  return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export default function BlogDetail() {
   const { slug } = useParams();
   const [post, setPost] = useState<BlogPost | null>(null);
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
+  const [relatedPostsError, setRelatedPostsError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,6 +30,43 @@ export default function BlogDetail() {
       setLoading(false);
     }
     loadPost();
+  }, [slug]);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadRelatedPosts() {
+      if (!slug) {
+        setRelatedPosts([]);
+        return;
+      }
+
+      setRelatedPosts([]);
+      setRelatedPostsError(null);
+
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .not('published_at', 'is', null)
+        .neq('slug', slug)
+        .order('published_at', { ascending: false })
+        .limit(3);
+
+      if (!isCurrent) return;
+
+      if (error) {
+        setRelatedPostsError(error.message);
+        return;
+      }
+
+      setRelatedPosts((data as BlogPost[]) || []);
+    }
+
+    loadRelatedPosts();
+
+    return () => {
+      isCurrent = false;
+    };
   }, [slug]);
 
   if (loading) {
@@ -42,8 +86,59 @@ export default function BlogDetail() {
     );
   }
 
+  const description = stripHtml(post.excerpt || '') || stripHtml(post.content).slice(0, 155);
+  const canonicalUrl = `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}`;
+  const imageUrl = post.image_url
+    ? new URL(post.image_url, 'https://monmarchefute.com').toString()
+    : 'https://monmarchefute.com/favicon.png';
+  const dateModified = (post as BlogPost & { updated_at?: string | null }).updated_at
+    || post.created_at
+    || post.published_at;
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    image: imageUrl,
+    datePublished: post.published_at,
+    dateModified,
+    author: {
+      '@type': 'Organization',
+      name: 'Mon Marché Futé',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Mon Marché Futé',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://monmarchefute.com/favicon.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+    },
+  };
+
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <Helmet>
+        <title>{post.title} | Mon Marché Futé</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={`${post.title} | Mon Marché Futé`} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={imageUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${post.title} | Mon Marché Futé`} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageUrl} />
+        <script type="application/ld+json">
+          {JSON.stringify(articleJsonLd).replace(/</g, '\\u003c')}
+        </script>
+      </Helmet>
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
       <Link to="/actualites" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mb-4">
         <ArrowLeft className="h-4 w-4" /> Toutes les actualités
       </Link>
@@ -62,9 +157,50 @@ export default function BlogDetail() {
         <pre className="whitespace-pre-wrap font-sans text-stone-700 leading-relaxed">{post.content}</pre>
       </div>
 
+      {relatedPostsError && (
+        <p role="alert" className="mt-8 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+          Impossible de charger les articles à lire aussi : {relatedPostsError}
+        </p>
+      )}
+
+      {relatedPosts.length > 0 && (
+        <section className="mt-10" aria-labelledby="related-articles-title">
+          <h2 id="related-articles-title" className="mb-5 font-serif text-2xl font-bold text-stone-800">À lire aussi</h2>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedPosts.map((relatedPost) => (
+              <Link
+                key={relatedPost.id}
+                to={`/actualites/${relatedPost.slug}`}
+                className="card group overflow-hidden"
+              >
+                <div className="aspect-video overflow-hidden bg-stone-100">
+                  {relatedPost.image_url && (
+                    <img
+                      src={relatedPost.image_url}
+                      alt={relatedPost.title}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+                <div className="p-4">
+                  {relatedPost.published_at && (
+                    <p className="mb-1 text-xs text-stone-400">{formatDate(relatedPost.published_at)}</p>
+                  )}
+                  <h3 className="font-semibold text-stone-800 transition-colors group-hover:text-primary-700">
+                    {relatedPost.title}
+                  </h3>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       <div className="mt-10">
         <NewsletterSignup />
       </div>
-    </div>
+      </div>
+    </>
   );
 }
