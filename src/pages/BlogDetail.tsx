@@ -98,16 +98,20 @@ export default function BlogDetail() {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
+    description,
     image: imageUrl,
     datePublished: post.published_at,
     dateModified,
+    inLanguage: 'fr-FR',
     author: {
       '@type': 'Organization',
       name: 'Mon Marché Futé',
+      '@id': 'https://monmarchefute.com/#organization',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Mon Marché Futé',
+      '@id': 'https://monmarchefute.com/#organization',
       logo: {
         '@type': 'ImageObject',
         url: 'https://monmarchefute.com/favicon.png',
@@ -117,6 +121,7 @@ export default function BlogDetail() {
       '@type': 'WebPage',
       '@id': canonicalUrl,
     },
+    isPartOf: { '@id': 'https://monmarchefute.com/#website' },
   };
 
   return (

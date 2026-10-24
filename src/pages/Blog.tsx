@@ -4,7 +4,7 @@ import { Newspaper } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { BlogPost } from '../lib/types';
 import { formatDate } from '../lib/utils';
-import { Helmet } from "react-helmet-async";
+import { Helmet } from 'react-helmet-async';
 
 
 export default function Blog() {
@@ -24,17 +24,41 @@ export default function Blog() {
     loadPosts();
   }, []);
 
+  const blogStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    '@id': 'https://monmarchefute.com/actualites#blog',
+    url: 'https://monmarchefute.com/actualites',
+    name: 'Actualités, produits de saison et conseils | Mon Marché Futé',
+    description: 'Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme.',
+    inLanguage: 'fr-FR',
+    isPartOf: { '@id': 'https://monmarchefute.com/#website' },
+    publisher: { '@id': 'https://monmarchefute.com/#organization' },
+    blogPost: posts.map((post) => ({
+      '@type': 'BlogPosting',
+      headline: post.title,
+      url: `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}`,
+      ...(post.excerpt ? { description: post.excerpt } : {}),
+      ...(post.image_url ? { image: new URL(post.image_url, 'https://monmarchefute.com').toString() } : {}),
+      datePublished: post.published_at,
+      dateModified: post.published_at,
+      author: { '@id': 'https://monmarchefute.com/#organization' },
+      publisher: { '@id': 'https://monmarchefute.com/#organization' },
+    })),
+  };
+
   return (
     <>
-    <Helmet>
-  <title>Actualités, produits de saison et conseils | Mon Marché Futé</title>
-  <meta
-    name="description"
-    content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme."
-  />
-  <link rel="canonical" href="https://monmarchefute.com/actualites" />
-    </Helmet>
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <Helmet>
+        <title>Actualités, produits de saison et conseils | Mon Marché Futé</title>
+        <meta
+          name="description"
+          content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme."
+        />
+        <link rel="canonical" href="https://monmarchefute.com/actualites" />
+        <script type="application/ld+json">{JSON.stringify(blogStructuredData).replace(/</g, '\\u003c')}</script>
+      </Helmet>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-2">Actualités</h1>
       <p className="text-stone-500 mb-8">Nouveautés, conseils et histoires de nos producteurs.</p>
 
@@ -67,7 +91,7 @@ export default function Blog() {
           ))}
         </div>
       )}
-    </div>
+      </div>
     </>
   );
 }

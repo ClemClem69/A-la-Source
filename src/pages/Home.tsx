@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Leaf, Truck, Shield, Heart, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Product, Producer } from '../lib/types';
@@ -44,9 +45,39 @@ export default function Home() {
     automne: 'Automne',
     hiver: 'Hiver',
   };
+  const homeStructuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': 'https://monmarchefute.com/#website',
+        url: 'https://monmarchefute.com/',
+        name: 'Mon Marché Futé',
+        inLanguage: 'fr-FR',
+        publisher: { '@id': 'https://monmarchefute.com/#organization' },
+      },
+      {
+        '@type': 'WebPage',
+        '@id': 'https://monmarchefute.com/#webpage',
+        url: 'https://monmarchefute.com/',
+        name: 'Mon Marché Futé | Fruits et légumes frais en direct des producteurs',
+        description: 'Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale.',
+        isPartOf: { '@id': 'https://monmarchefute.com/#website' },
+        about: { '@id': 'https://monmarchefute.com/#organization' },
+        inLanguage: 'fr-FR',
+      },
+    ],
+  };
 
   return (
-    <div>
+    <>
+      <Helmet>
+        <title>Mon Marché Futé | Fruits et légumes frais en direct des producteurs</title>
+        <meta name="description" content="Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale." />
+        <link rel="canonical" href="https://monmarchefute.com/" />
+        <script type="application/ld+json">{JSON.stringify(homeStructuredData).replace(/</g, '\\u003c')}</script>
+      </Helmet>
+      <div>
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-primary-800">
         <div className="absolute inset-0 opacity-10">
@@ -169,6 +200,7 @@ export default function Home() {
       <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pb-16">
         <NewsletterSignup />
       </section>
-    </div>
+      </div>
+    </>
   );
 }

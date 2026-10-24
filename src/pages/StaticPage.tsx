@@ -1,5 +1,6 @@
 import { Leaf, Truck, Shield, Heart, MapPin, CreditCard, Package } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import NewsletterSignup from '../components/NewsletterSignup';
 
 interface StaticPageProps {
@@ -8,17 +9,39 @@ interface StaticPageProps {
 
 export default function StaticPage({ page }: StaticPageProps) {
   const content = getContent(page);
+  const aboutStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    '@id': 'https://monmarchefute.com/qui-sommes-nous#webpage',
+    url: 'https://monmarchefute.com/qui-sommes-nous',
+    name: 'Qui sommes-nous ? | Mon Marché Futé',
+    description: 'Découvrez Mon Marché Futé, la plateforme qui relie les consommateurs aux producteurs français pour une vente directe, locale et plus équitable.',
+    inLanguage: 'fr-FR',
+    isPartOf: { '@id': 'https://monmarchefute.com/#website' },
+    about: { '@id': 'https://monmarchefute.com/#organization' },
+    mainEntity: { '@id': 'https://monmarchefute.com/#organization' },
+  };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="font-serif text-3xl font-bold text-stone-800 mb-6">{content.title}</h1>
-      <div className="prose prose-stone max-w-none">{content.body}</div>
+    <>
       {page === 'about' && (
-        <div className="mt-10">
-          <NewsletterSignup />
-        </div>
+        <Helmet>
+          <title>Qui sommes-nous ? | Mon Marché Futé</title>
+          <meta name="description" content="Découvrez Mon Marché Futé, la plateforme qui relie les consommateurs aux producteurs français pour une vente directe, locale et plus équitable." />
+          <link rel="canonical" href="https://monmarchefute.com/qui-sommes-nous" />
+          <script type="application/ld+json">{JSON.stringify(aboutStructuredData).replace(/</g, '\\u003c')}</script>
+        </Helmet>
       )}
-    </div>
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="font-serif text-3xl font-bold text-stone-800 mb-6">{content.title}</h1>
+        <div className="prose prose-stone max-w-none">{content.body}</div>
+        {page === 'about' && (
+          <div className="mt-10">
+            <NewsletterSignup />
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

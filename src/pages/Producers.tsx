@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
 import type { Producer } from '../lib/types';
 import ProducerCard from '../components/ProducerCard';
@@ -20,8 +21,51 @@ export default function Producers() {
     loadProducers();
   }, []);
 
+  const producersStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': 'https://monmarchefute.com/producteurs#webpage',
+    url: 'https://monmarchefute.com/producteurs',
+    name: 'Producteurs français en vente directe | Mon Marché Futé',
+    description: 'Rencontrez les producteurs français de fruits et légumes frais et découvrez leurs exploitations.',
+    inLanguage: 'fr-FR',
+    isPartOf: { '@id': 'https://monmarchefute.com/#website' },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: producers.length,
+      itemListElement: producers.map((producer, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'Organization',
+          name: producer.company_name,
+          url: `https://monmarchefute.com/producteur/${encodeURIComponent(producer.id)}`,
+          ...(producer.description ? { description: producer.description } : {}),
+          ...(producer.logo_url ? { image: new URL(producer.logo_url, 'https://monmarchefute.com').toString() } : {}),
+          ...(producer.city || producer.address ? {
+            address: {
+              '@type': 'PostalAddress',
+              ...(producer.address ? { streetAddress: producer.address } : {}),
+              ...(producer.city ? { addressLocality: producer.city } : {}),
+              ...(producer.region ? { addressRegion: producer.region } : {}),
+              ...(producer.postal_code ? { postalCode: producer.postal_code } : {}),
+              addressCountry: 'FR',
+            },
+          } : {}),
+        },
+      })),
+    },
+  };
+
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <Helmet>
+        <title>Producteurs français en vente directe | Mon Marché Futé</title>
+        <meta name="description" content="Rencontrez les producteurs français de fruits et légumes frais. Découvrez leurs exploitations et leurs produits en vente directe." />
+        <link rel="canonical" href="https://monmarchefute.com/producteurs" />
+        <script type="application/ld+json">{JSON.stringify(producersStructuredData).replace(/</g, '\\u003c')}</script>
+      </Helmet>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-2">Nos producteurs</h1>
       <p className="text-stone-500 mb-8">Découvrez les maraîchers et arboriculteurs qui cultivent vos fruits et légumes.</p>
 
@@ -38,6 +82,7 @@ export default function Producers() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
