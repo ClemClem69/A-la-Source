@@ -34,17 +34,6 @@ export default function Blog() {
     inLanguage: 'fr-FR',
     isPartOf: { '@id': 'https://monmarchefute.com/#website' },
     publisher: { '@id': 'https://monmarchefute.com/#organization' },
-    blogPost: posts.map((post) => ({
-      '@type': 'BlogPosting',
-      headline: post.title,
-      url: `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}`,
-      ...(post.excerpt ? { description: post.excerpt } : {}),
-      ...(post.image_url ? { image: new URL(post.image_url, 'https://monmarchefute.com').toString() } : {}),
-      datePublished: post.published_at,
-      dateModified: post.published_at,
-      author: { '@id': 'https://monmarchefute.com/#organization' },
-      publisher: { '@id': 'https://monmarchefute.com/#organization' },
-    })),
   };
 
   return (
@@ -56,6 +45,14 @@ export default function Blog() {
           content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme."
         />
         <link rel="canonical" href="https://monmarchefute.com/actualites" />
+        <meta property="og:title" content="Actualités, produits de saison et conseils | Mon Marché Futé" />
+        <meta property="og:description" content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme." />
+        <meta property="og:url" content="https://monmarchefute.com/actualites" />
+        <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Actualités, produits de saison et conseils | Mon Marché Futé" />
+        <meta name="twitter:description" content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme." />
+        <meta name="twitter:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <script type="application/ld+json">{JSON.stringify(blogStructuredData).replace(/</g, '\\u003c')}</script>
       </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">

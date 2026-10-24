@@ -60,7 +60,7 @@ export default function Home() {
         '@type': 'WebPage',
         '@id': 'https://monmarchefute.com/#webpage',
         url: 'https://monmarchefute.com/',
-        name: 'Mon Marché Futé | Fruits et légumes frais en direct des producteurs',
+        name: 'Mon Marché Futé — Produits locaux en vente directe',
         description: 'Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale.',
         isPartOf: { '@id': 'https://monmarchefute.com/#website' },
         about: { '@id': 'https://monmarchefute.com/#organization' },
@@ -72,9 +72,17 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>Mon Marché Futé | Fruits et légumes frais en direct des producteurs</title>
+        <title>Mon Marché Futé — Produits locaux en vente directe</title>
         <meta name="description" content="Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale." />
         <link rel="canonical" href="https://monmarchefute.com/" />
+        <meta property="og:title" content="Mon Marché Futé — Produits locaux en vente directe" />
+        <meta property="og:description" content="Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale." />
+        <meta property="og:url" content="https://monmarchefute.com/" />
+        <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Mon Marché Futé — Produits locaux en vente directe" />
+        <meta name="twitter:description" content="Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale." />
+        <meta name="twitter:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <script type="application/ld+json">{JSON.stringify(homeStructuredData).replace(/</g, '\\u003c')}</script>
       </Helmet>
       <div>

@@ -11,6 +11,19 @@ function stripHtml(value: string): string {
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function makeMetaDescription(excerpt: string | null | undefined, content: string | null | undefined): string {
+  const cleanExcerpt = stripHtml(excerpt ?? '');
+  if (cleanExcerpt) return cleanExcerpt;
+
+  const cleanContent = stripHtml(content ?? '');
+  if (!cleanContent) return 'Découvrez cet article sur Mon Marché Futé.';
+  if (cleanContent.length <= 155) return cleanContent;
+
+  const shortened = cleanContent.slice(0, 155);
+  const lastSpace = shortened.lastIndexOf(' ');
+  return shortened.slice(0, lastSpace > 0 ? lastSpace : 155).trim();
+}
+
 export default function BlogDetail() {
   const { slug } = useParams();
   const [post, setPost] = useState<BlogPost | null>(null);
@@ -86,32 +99,26 @@ export default function BlogDetail() {
     );
   }
 
-  const description = stripHtml(post.excerpt || '') || stripHtml(post.content).slice(0, 155);
+  const description = makeMetaDescription(post.excerpt, post.content);
   const canonicalUrl = `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}`;
-  const imageUrl = post.image_url
-    ? new URL(post.image_url, 'https://monmarchefute.com').toString()
-    : 'https://monmarchefute.com/favicon.png';
-  const dateModified = (post as BlogPost & { updated_at?: string | null }).updated_at
-    || post.created_at
-    || post.published_at;
+  const imageUrl = post.image_url ? new URL(post.image_url, 'https://monmarchefute.com').toString() : null;
+  const dateModified = (post as BlogPost & { updated_at?: string | null }).updated_at || post.published_at;
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
-    description,
-    image: imageUrl,
+    ...(imageUrl ? { image: [imageUrl] } : {}),
     datePublished: post.published_at,
     dateModified,
     inLanguage: 'fr-FR',
     author: {
       '@type': 'Organization',
       name: 'Mon Marché Futé',
-      '@id': 'https://monmarchefute.com/#organization',
+      url: 'https://monmarchefute.com',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Mon Marché Futé',
-      '@id': 'https://monmarchefute.com/#organization',
       logo: {
         '@type': 'ImageObject',
         url: 'https://monmarchefute.com/favicon.png',
@@ -121,8 +128,14 @@ export default function BlogDetail() {
       '@type': 'WebPage',
       '@id': canonicalUrl,
     },
-    isPartOf: { '@id': 'https://monmarchefute.com/#website' },
   };
+  const contentText = /<\/?[a-z][\s\S]*>/i.test(post.content)
+    ? stripHtml(post.content)
+    : post.content;
+  const contentParagraphs = contentText.split(/\r?\n/).map((paragraph) => paragraph.trim()).filter(Boolean);
+  const publishedDate = post.published_at
+    ? new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(post.published_at))
+    : null;
 
   return (
     <>
@@ -134,11 +147,11 @@ export default function BlogDetail() {
         <meta property="og:title" content={`${post.title} | Mon Marché Futé`} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={imageUrl} />
+        {imageUrl && <meta property="og:image" content={imageUrl} />}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${post.title} | Mon Marché Futé`} />
         <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={imageUrl} />
+        {imageUrl && <meta name="twitter:image" content={imageUrl} />}
         <script type="application/ld+json">
           {JSON.stringify(articleJsonLd).replace(/</g, '\\u003c')}
         </script>
@@ -154,12 +167,16 @@ export default function BlogDetail() {
         </div>
       )}
 
-      <p className="text-sm text-stone-400 mb-2">{post.published_at && formatDate(post.published_at)}</p>
+      {publishedDate && <p className="text-sm text-stone-400 mb-2">Publié le {publishedDate}</p>}
       <h1 className="font-serif text-3xl font-bold text-stone-800 mb-3">{post.title}</h1>
       <p className="text-lg text-stone-600 mb-6">{post.excerpt}</p>
 
       <div className="prose prose-stone max-w-none">
-        <pre className="whitespace-pre-wrap font-sans text-stone-700 leading-relaxed">{post.content}</pre>
+        {contentParagraphs.map((paragraph, index) => (
+          <p key={`${index}-${paragraph.slice(0, 24)}`} className="font-sans text-stone-700 leading-relaxed">
+            {paragraph}
+          </p>
+        ))}
       </div>
 
       {relatedPostsError && (

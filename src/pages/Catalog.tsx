@@ -86,7 +86,7 @@ export default function Catalog() {
     '@type': 'CollectionPage',
     '@id': 'https://monmarchefute.com/catalogue#webpage',
     url: 'https://monmarchefute.com/catalogue',
-    name: 'Catalogue de fruits et légumes frais | Mon Marché Futé',
+    name: 'Catalogue de produits locaux | Mon Marché Futé',
     description: 'Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français.',
     inLanguage: 'fr-FR',
     isPartOf: { '@id': 'https://monmarchefute.com/#website' },
@@ -96,22 +96,8 @@ export default function Catalog() {
       itemListElement: filteredProducts.map((product, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        item: {
-          '@type': 'Product',
-          name: product.name,
-          url: `https://monmarchefute.com/produit/${encodeURIComponent(product.id)}`,
-          ...(product.image_url ? { image: new URL(product.image_url, 'https://monmarchefute.com').toString() } : {}),
-          ...(product.description ? { description: product.description } : {}),
-          offers: {
-            '@type': 'Offer',
-            priceCurrency: 'EUR',
-            price: product.final_price,
-            availability: product.stock > 0
-              ? 'https://schema.org/InStock'
-              : 'https://schema.org/OutOfStock',
-            url: `https://monmarchefute.com/produit/${encodeURIComponent(product.id)}`,
-          },
-        },
+        name: product.name,
+        url: `https://monmarchefute.com/produit/${encodeURIComponent(product.id)}`,
       })),
     },
   };
@@ -119,9 +105,17 @@ export default function Catalog() {
   return (
     <>
       <Helmet>
-        <title>Catalogue de fruits et légumes frais | Mon Marché Futé</title>
+        <title>Catalogue de produits locaux | Mon Marché Futé</title>
         <meta name="description" content="Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français. Filtrez par saison, catégorie et agriculture biologique." />
         <link rel="canonical" href="https://monmarchefute.com/catalogue" />
+        <meta property="og:title" content="Catalogue de produits locaux | Mon Marché Futé" />
+        <meta property="og:description" content="Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français. Filtrez par saison, catégorie et agriculture biologique." />
+        <meta property="og:url" content="https://monmarchefute.com/catalogue" />
+        <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Catalogue de produits locaux | Mon Marché Futé" />
+        <meta name="twitter:description" content="Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français. Filtrez par saison, catégorie et agriculture biologique." />
+        <meta name="twitter:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <script type="application/ld+json">{JSON.stringify(catalogStructuredData).replace(/</g, '\\u003c')}</script>
       </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">

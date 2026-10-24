@@ -26,7 +26,7 @@ export default function Producers() {
     '@type': 'CollectionPage',
     '@id': 'https://monmarchefute.com/producteurs#webpage',
     url: 'https://monmarchefute.com/producteurs',
-    name: 'Producteurs français en vente directe | Mon Marché Futé',
+    name: 'Découvrez nos producteurs français | Mon Marché Futé',
     description: 'Rencontrez les producteurs français de fruits et légumes frais et découvrez leurs exploitations.',
     inLanguage: 'fr-FR',
     isPartOf: { '@id': 'https://monmarchefute.com/#website' },
@@ -60,9 +60,17 @@ export default function Producers() {
   return (
     <>
       <Helmet>
-        <title>Producteurs français en vente directe | Mon Marché Futé</title>
+        <title>Découvrez nos producteurs français | Mon Marché Futé</title>
         <meta name="description" content="Rencontrez les producteurs français de fruits et légumes frais. Découvrez leurs exploitations et leurs produits en vente directe." />
         <link rel="canonical" href="https://monmarchefute.com/producteurs" />
+        <meta property="og:title" content="Découvrez nos producteurs français | Mon Marché Futé" />
+        <meta property="og:description" content="Rencontrez les producteurs français de fruits et légumes frais. Découvrez leurs exploitations et leurs produits en vente directe." />
+        <meta property="og:url" content="https://monmarchefute.com/producteurs" />
+        <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Découvrez nos producteurs français | Mon Marché Futé" />
+        <meta name="twitter:description" content="Rencontrez les producteurs français de fruits et légumes frais. Découvrez leurs exploitations et leurs produits en vente directe." />
+        <meta name="twitter:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <script type="application/ld+json">{JSON.stringify(producersStructuredData).replace(/</g, '\\u003c')}</script>
       </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
