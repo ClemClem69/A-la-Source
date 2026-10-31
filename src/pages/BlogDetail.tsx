@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../lib/supabase';
+import { sanitizeArticleContent } from '../lib/articleContent';
 import type { BlogPost } from '../lib/types';
 import { formatDate } from '../lib/utils';
 import NewsletterSignup from '../components/NewsletterSignup';
@@ -129,10 +130,7 @@ export default function BlogDetail() {
       '@id': canonicalUrl,
     },
   };
-  const contentText = /<\/?[a-z][\s\S]*>/i.test(post.content)
-    ? stripHtml(post.content)
-    : post.content;
-  const contentParagraphs = contentText.split(/\r?\n/).map((paragraph) => paragraph.trim()).filter(Boolean);
+  const safeArticleHtml = sanitizeArticleContent(post.content);
   const publishedDate = post.published_at
     ? new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(post.published_at))
     : null;
@@ -172,11 +170,10 @@ export default function BlogDetail() {
       <p className="text-lg text-stone-600 mb-6">{post.excerpt}</p>
 
       <div className="prose prose-stone max-w-none">
-        {contentParagraphs.map((paragraph, index) => (
-          <p key={`${index}-${paragraph.slice(0, 24)}`} className="font-sans text-stone-700 leading-relaxed">
-            {paragraph}
-          </p>
-        ))}
+        <div
+          className="font-sans text-stone-700 leading-relaxed [&_p]:mb-4 [&_u]:underline"
+          dangerouslySetInnerHTML={{ __html: safeArticleHtml }}
+        />
       </div>
 
       {relatedPostsError && (

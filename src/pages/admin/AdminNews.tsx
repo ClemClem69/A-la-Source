@@ -3,6 +3,8 @@ import { Newspaper, Pencil, Plus, Trash2, X } from 'lucide-react';
 import AdminBackButton from '../../components/AdminBackButton';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import RichTextEditor from '../../components/RichTextEditor';
+import { articleContentHasText, sanitizeArticleContent } from '../../lib/articleContent';
 import type { BlogPost } from '../../lib/types';
 import { formatDate, slugify } from '../../lib/utils';
 
@@ -117,6 +119,12 @@ export default function AdminNews() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!profile) return;
+    const content = sanitizeArticleContent(form.content.trim());
+    if (!articleContentHasText(content)) {
+      setError('Le contenu de l’article est obligatoire.');
+      return;
+    }
+
     setSaving(true);
     setError(null);
     setSuccess(null);
@@ -132,7 +140,7 @@ export default function AdminNews() {
       title: form.title.trim(),
       slug,
       excerpt: form.excerpt.trim() || null,
-      content: form.content.trim(),
+      content,
       image_url: imageUrl,
       author_id: profile.id,
       published_at: publishNow ? originalPublishedAt || new Date().toISOString() : null,
@@ -222,14 +230,14 @@ export default function AdminNews() {
               placeholder="Court résumé affiché dans la liste"
             />
           </label>
-          <label className="label">Contenu
-            <textarea
-              value={form.content}
-              onChange={(e) => setForm((current) => ({ ...current, content: e.target.value }))}
-              className="input mt-1 min-h-40 resize-y"
-              required
+          <div>
+            <label className="label" htmlFor="article-content-editor">Contenu</label>
+            <RichTextEditor
+              key={editingId ?? 'new-article'}
+              initialValue={form.content}
+              onChange={(content) => setForm((current) => ({ ...current, content }))}
             />
-          </label>
+          </div>
           <label className="label">Image (URL)
             <input
               value={form.imageUrl}
