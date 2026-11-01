@@ -197,14 +197,20 @@ const sitemap = await readFile(sitemapPath, 'utf8');
 const sitemapPaths = [...sitemap.matchAll(/<loc>\s*https?:\/\/[^/]+(\/[^<]*)<\/loc>/gi)]
   .map((match) => match[1] || '/');
 
+function normalizeRoute(route) {
+  if (route === '/') return route;
+  return `/${route.replace(/^\/+|\/+$/g, '')}/`;
+}
+
 function writePage(route, metadata) {
-  const outputDirectory = route === '/'
+  const normalizedRoute = normalizeRoute(route);
+  const outputDirectory = normalizedRoute === '/'
     ? distDirectory
-    : path.join(distDirectory, ...route.split('/').filter(Boolean));
-  const outputFile = route === '/'
+    : path.join(distDirectory, ...normalizedRoute.split('/').filter(Boolean));
+  const outputFile = normalizedRoute === '/'
     ? path.join(outputDirectory, 'index.html')
     : path.join(outputDirectory, 'index.html');
-  const canonicalUrl = `${siteUrl}${route === '/' ? '/' : route}`;
+  const canonicalUrl = `${siteUrl}${normalizedRoute}`;
 
   return mkdir(outputDirectory, { recursive: true }).then(() => writeFile(
     outputFile,
@@ -214,8 +220,9 @@ function writePage(route, metadata) {
 }
 
 for (const route of sitemapPaths) {
-  if (route.startsWith('/actualites/') && route !== '/actualites/') continue;
-  const metadata = pages.get(route);
+  const normalizedRoute = normalizeRoute(route);
+  if (normalizedRoute.startsWith('/actualites/') && normalizedRoute !== '/actualites/') continue;
+  const metadata = pages.get(normalizedRoute === '/' ? '/' : normalizedRoute.slice(0, -1));
   if (metadata) await writePage(route, metadata);
 }
 
@@ -223,7 +230,7 @@ const postsBySlug = new Map(posts.map((post) => [post.slug, post]));
 for (const post of posts) {
   if (!post.slug || !post.title || !post.published_at) continue;
 
-  const route = `/actualites/${post.slug}`;
+  const route = normalizeRoute(`/actualites/${post.slug}`);
   const canonicalUrl = `${siteUrl}${route}`;
   const description = articleDescription(post);
   const image = post.image_url ? new URL(post.image_url, siteUrl).toString() : undefined;
@@ -258,22 +265,25 @@ for (const post of posts) {
 }
 
 for (const route of sitemapPaths) {
-  if (!route.startsWith('/actualites/') || route === '/actualites/') continue;
-  const slug = decodeURIComponent(route.slice('/actualites/'.length));
+  const normalizedRoute = normalizeRoute(route);
+  if (!normalizedRoute.startsWith('/actualites/') || normalizedRoute === '/actualites/') continue;
+  const slug = decodeURIComponent(normalizedRoute.slice('/actualites/'.length, -1));
   if (!postsBySlug.has(slug)) {
     throw new Error(`Le sitemap référence un article non publié ou introuvable : ${route}`);
   }
 }
 
-const nonArticleRoutes = sitemapPaths.filter((route) => !route.startsWith('/actualites/'));
+const nonArticleRoutes = sitemapPaths
+  .filter((route) => !normalizeRoute(route).startsWith('/actualites/'))
+  .map(normalizeRoute);
 const sitemapEntries = [
   ...new Set(nonArticleRoutes),
   ...posts
     .filter((post) => post.slug && post.published_at)
-    .map((post) => `/actualites/${post.slug}`),
+    .map((post) => normalizeRoute(`/actualites/${post.slug}`)),
 ].map((route) => {
   const post = route.startsWith('/actualites/')
-    ? postsBySlug.get(decodeURIComponent(route.slice('/actualites/'.length)))
+    ? postsBySlug.get(decodeURIComponent(route.slice('/actualites/'.length, -1)))
     : null;
   const lastmod = post?.published_at ? `\n    <lastmod>${post.published_at.slice(0, 10)}</lastmod>` : '';
   return `  <url>\n    <loc>${siteUrl}${escapeHtml(route)}</loc>${lastmod}\n  </url>`;

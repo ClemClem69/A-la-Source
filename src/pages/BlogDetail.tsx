@@ -101,7 +101,7 @@ export default function BlogDetail() {
   }
 
   const description = makeMetaDescription(post.excerpt, post.content);
-  const canonicalUrl = `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}`;
+  const canonicalUrl = `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}/`;
   const imageUrl = post.image_url ? new URL(post.image_url, 'https://monmarchefute.com').toString() : null;
   const dateModified = (post as BlogPost & { updated_at?: string | null }).updated_at || post.published_at;
   const articleJsonLd = {
@@ -189,7 +189,7 @@ export default function BlogDetail() {
             {relatedPosts.map((relatedPost) => (
               <Link
                 key={relatedPost.id}
-                to={`/actualites/${relatedPost.slug}`}
+                to={`/actualites/${relatedPost.slug}/`}
                 className="card group overflow-hidden"
               >
                 <div className="aspect-video overflow-hidden bg-stone-100">

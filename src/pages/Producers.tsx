@@ -24,8 +24,8 @@ export default function Producers() {
   const producersStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    '@id': 'https://monmarchefute.com/producteurs#webpage',
-    url: 'https://monmarchefute.com/producteurs',
+    '@id': 'https://monmarchefute.com/producteurs/#webpage',
+    url: 'https://monmarchefute.com/producteurs/',
     name: 'Découvrez nos producteurs français | Mon Marché Futé',
     description: 'Rencontrez les producteurs français de fruits et légumes frais et découvrez leurs exploitations.',
     inLanguage: 'fr-FR',
@@ -62,10 +62,10 @@ export default function Producers() {
       <Helmet>
         <title>Découvrez nos producteurs français | Mon Marché Futé</title>
         <meta name="description" content="Rencontrez les producteurs français de fruits et légumes frais. Découvrez leurs exploitations et leurs produits en vente directe." />
-        <link rel="canonical" href="https://monmarchefute.com/producteurs" />
+        <link rel="canonical" href="https://monmarchefute.com/producteurs/" />
         <meta property="og:title" content="Découvrez nos producteurs français | Mon Marché Futé" />
         <meta property="og:description" content="Rencontrez les producteurs français de fruits et légumes frais. Découvrez leurs exploitations et leurs produits en vente directe." />
-        <meta property="og:url" content="https://monmarchefute.com/producteurs" />
+        <meta property="og:url" content="https://monmarchefute.com/producteurs/" />
         <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Découvrez nos producteurs français | Mon Marché Futé" />

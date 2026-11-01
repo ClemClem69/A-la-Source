@@ -27,8 +27,8 @@ export default function Blog() {
   const blogStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    '@id': 'https://monmarchefute.com/actualites#blog',
-    url: 'https://monmarchefute.com/actualites',
+    '@id': 'https://monmarchefute.com/actualites/#blog',
+    url: 'https://monmarchefute.com/actualites/',
     name: 'Actualités, produits de saison et conseils | Mon Marché Futé',
     description: 'Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme.',
     inLanguage: 'fr-FR',
@@ -44,10 +44,10 @@ export default function Blog() {
           name="description"
           content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme."
         />
-        <link rel="canonical" href="https://monmarchefute.com/actualites" />
+        <link rel="canonical" href="https://monmarchefute.com/actualites/" />
         <meta property="og:title" content="Actualités, produits de saison et conseils | Mon Marché Futé" />
         <meta property="og:description" content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme." />
-        <meta property="og:url" content="https://monmarchefute.com/actualites" />
+        <meta property="og:url" content="https://monmarchefute.com/actualites/" />
         <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Actualités, produits de saison et conseils | Mon Marché Futé" />
@@ -73,7 +73,7 @@ export default function Blog() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
-            <Link key={post.id} to={`/actualites/${post.slug}`} className="card overflow-hidden group">
+            <Link key={post.id} to={`/actualites/${post.slug}/`} className="card overflow-hidden group">
               <div className="aspect-video overflow-hidden bg-stone-100">
                 {post.image_url && (
                   <img src={post.image_url} alt={post.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />

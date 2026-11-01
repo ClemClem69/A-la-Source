@@ -12,8 +12,8 @@ export default function StaticPage({ page }: StaticPageProps) {
   const aboutStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
-    '@id': 'https://monmarchefute.com/qui-sommes-nous#webpage',
-    url: 'https://monmarchefute.com/qui-sommes-nous',
+    '@id': 'https://monmarchefute.com/qui-sommes-nous/#webpage',
+    url: 'https://monmarchefute.com/qui-sommes-nous/',
     name: 'Qui sommes-nous ? | Mon Marché Futé',
     description: 'Découvrez Mon Marché Futé, la plateforme qui relie les consommateurs aux producteurs français pour une vente directe, locale et plus équitable.',
     inLanguage: 'fr-FR',
@@ -28,10 +28,10 @@ export default function StaticPage({ page }: StaticPageProps) {
         <Helmet>
           <title>Qui sommes-nous ? | Mon Marché Futé</title>
           <meta name="description" content="Découvrez Mon Marché Futé, la plateforme qui relie les consommateurs aux producteurs français pour une vente directe, locale et plus équitable." />
-          <link rel="canonical" href="https://monmarchefute.com/qui-sommes-nous" />
+          <link rel="canonical" href="https://monmarchefute.com/qui-sommes-nous/" />
           <meta property="og:title" content="Qui sommes-nous ? | Mon Marché Futé" />
           <meta property="og:description" content="Découvrez Mon Marché Futé, la plateforme qui relie les consommateurs aux producteurs français pour une vente directe, locale et plus équitable." />
-          <meta property="og:url" content="https://monmarchefute.com/qui-sommes-nous" />
+          <meta property="og:url" content="https://monmarchefute.com/qui-sommes-nous/" />
           <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content="Qui sommes-nous ? | Mon Marché Futé" />

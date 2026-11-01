@@ -84,8 +84,8 @@ export default function Catalog() {
   const catalogStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    '@id': 'https://monmarchefute.com/catalogue#webpage',
-    url: 'https://monmarchefute.com/catalogue',
+    '@id': 'https://monmarchefute.com/catalogue/#webpage',
+    url: 'https://monmarchefute.com/catalogue/',
     name: 'Catalogue de produits locaux | Mon Marché Futé',
     description: 'Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français.',
     inLanguage: 'fr-FR',
@@ -107,10 +107,10 @@ export default function Catalog() {
       <Helmet>
         <title>Catalogue de produits locaux | Mon Marché Futé</title>
         <meta name="description" content="Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français. Filtrez par saison, catégorie et agriculture biologique." />
-        <link rel="canonical" href="https://monmarchefute.com/catalogue" />
+        <link rel="canonical" href="https://monmarchefute.com/catalogue/" />
         <meta property="og:title" content="Catalogue de produits locaux | Mon Marché Futé" />
         <meta property="og:description" content="Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français. Filtrez par saison, catégorie et agriculture biologique." />
-        <meta property="og:url" content="https://monmarchefute.com/catalogue" />
+        <meta property="og:url" content="https://monmarchefute.com/catalogue/" />
         <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Catalogue de produits locaux | Mon Marché Futé" />
