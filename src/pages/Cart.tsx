@@ -15,7 +15,7 @@ export default function Cart() {
         </div>
         <h1 className="font-serif text-2xl font-bold text-stone-800 mb-2">Votre panier est vide</h1>
         <p className="text-stone-500 mb-6">Découvrez nos produits frais et ajoutez-les à votre panier.</p>
-        <Link to="/catalogue" className="btn-primary">
+        <Link to="/catalogue/" className="btn-primary">
           Voir le catalogue <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -109,7 +109,7 @@ export default function Cart() {
             <button onClick={() => navigate('/commander')} className="btn-primary w-full mt-4">
               Passer commande <ArrowRight className="h-4 w-4" />
             </button>
-            <Link to="/catalogue" className="btn-secondary w-full mt-2">
+            <Link to="/catalogue/" className="btn-secondary w-full mt-2">
               Continuer mes achats
             </Link>
           </div>

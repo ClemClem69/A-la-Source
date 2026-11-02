@@ -119,7 +119,7 @@ const pages = new Map([
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      url: `${siteUrl}/catalogue`,
+      url: `${siteUrl}/catalogue/`,
       name: 'Catalogue de produits locaux | Mon Marché Futé',
       inLanguage: 'fr-FR',
       isPartOf: { '@id': `${siteUrl}/#website` },
@@ -131,7 +131,7 @@ const pages = new Map([
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      url: `${siteUrl}/producteurs`,
+      url: `${siteUrl}/producteurs/`,
       name: 'Découvrez nos producteurs français | Mon Marché Futé',
       inLanguage: 'fr-FR',
       isPartOf: { '@id': `${siteUrl}/#website` },
@@ -143,7 +143,7 @@ const pages = new Map([
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'Blog',
-      url: `${siteUrl}/actualites`,
+      url: `${siteUrl}/actualites/`,
       name: 'Actualités, produits de saison et conseils | Mon Marché Futé',
       inLanguage: 'fr-FR',
       isPartOf: { '@id': `${siteUrl}/#website` },
@@ -156,7 +156,7 @@ const pages = new Map([
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'AboutPage',
-      url: `${siteUrl}/qui-sommes-nous`,
+      url: `${siteUrl}/qui-sommes-nous/`,
       name: 'Qui sommes-nous ? | Mon Marché Futé',
       inLanguage: 'fr-FR',
       isPartOf: { '@id': `${siteUrl}/#website` },
@@ -274,7 +274,10 @@ for (const route of sitemapPaths) {
 }
 
 const nonArticleRoutes = sitemapPaths
-  .filter((route) => !normalizeRoute(route).startsWith('/actualites/'))
+  .filter((route) => {
+    const normalizedRoute = normalizeRoute(route);
+    return !normalizedRoute.startsWith('/actualites/') || normalizedRoute === '/actualites/';
+  })
   .map(normalizeRoute);
 const sitemapEntries = [
   ...new Set(nonArticleRoutes),

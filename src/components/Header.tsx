@@ -14,15 +14,16 @@ export default function Header() {
 
   const navLinks = [
     { to: '/', label: 'Accueil' },
-    { to: '/catalogue', label: 'Catalogue' },
-    { to: '/producteurs', label: 'Producteurs' },
-    { to: '/actualites', label: 'Actualités' },
-    { to: '/qui-sommes-nous', label: 'Qui sommes-nous ?' },
+    { to: '/catalogue/', label: 'Catalogue' },
+    { to: '/producteurs/', label: 'Producteurs' },
+    { to: '/actualites/', label: 'Actualités' },
+    { to: '/qui-sommes-nous/', label: 'Qui sommes-nous ?' },
   ];
 
   function isActive(to: string) {
     if (to === '/') return location.pathname === '/';
-    return location.pathname === to || location.pathname.startsWith(`${to}/`);
+    const route = to.replace(/\/$/, '');
+    return location.pathname === route || location.pathname.startsWith(`${route}/`);
   }
 
   function handleSignOut() {

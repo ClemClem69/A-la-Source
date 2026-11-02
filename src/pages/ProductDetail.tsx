@@ -61,7 +61,7 @@ export default function ProductDetail() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">
         <p className="text-stone-500">Produit introuvable.</p>
-        <Link to="/catalogue" className="btn-primary mt-4">Retour au catalogue</Link>
+        <Link to="/catalogue/" className="btn-primary mt-4">Retour au catalogue</Link>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export default function ProductDetail() {
         <p className="text-amber-700 bg-amber-50 p-4 rounded-lg inline-block">
           Ce produit est en attente de validation du prix. Il ne peut pas être acheté pour le moment.
         </p>
-        <Link to="/catalogue" className="btn-primary mt-4">Retour au catalogue</Link>
+        <Link to="/catalogue/" className="btn-primary mt-4">Retour au catalogue</Link>
       </div>
     );
   }
@@ -81,7 +81,7 @@ export default function ProductDetail() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-      <Link to="/catalogue" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mb-4">
+      <Link to="/catalogue/" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mb-4">
         <ArrowLeft className="h-4 w-4" /> Retour au catalogue
       </Link>
 

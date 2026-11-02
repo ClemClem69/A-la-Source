@@ -103,7 +103,7 @@ export default function Checkout() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">
         <p className="text-stone-500">Votre panier est vide.</p>
-        <Link to="/catalogue" className="btn-primary mt-4">Voir le catalogue</Link>
+        <Link to="/catalogue/" className="btn-primary mt-4">Voir le catalogue</Link>
       </div>
     );
   }
@@ -120,7 +120,7 @@ export default function Checkout() {
         </p>
         <div className="flex gap-3 justify-center">
           <Link to="/commandes" className="btn-primary">Voir mes commandes</Link>
-          <Link to="/catalogue" className="btn-secondary">Continuer mes achats</Link>
+          <Link to="/catalogue/" className="btn-secondary">Continuer mes achats</Link>
         </div>
       </div>
     );

@@ -53,7 +53,7 @@ export default function Orders() {
         <div className="text-center py-16">
           <Package className="h-12 w-12 text-stone-300 mx-auto mb-4" />
           <p className="text-stone-500 mb-4">Vous n'avez pas encore de commande.</p>
-          <Link to="/catalogue" className="btn-primary">Découvrir le catalogue</Link>
+          <Link to="/catalogue/" className="btn-primary">Découvrir le catalogue</Link>
         </div>
       ) : (
         <div className="space-y-4">

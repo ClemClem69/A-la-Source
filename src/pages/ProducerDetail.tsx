@@ -59,7 +59,7 @@ export default function ProducerDetail() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">
         <p className="text-stone-500">Producteur introuvable.</p>
-        <Link to="/producteurs" className="btn-primary mt-4">Voir tous les producteurs</Link>
+        <Link to="/producteurs/" className="btn-primary mt-4">Voir tous les producteurs</Link>
       </div>
     );
   }
@@ -77,7 +77,7 @@ export default function ProducerDetail() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <Link to="/producteurs" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mt-4">
+        <Link to="/producteurs/" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mt-4">
           <ArrowLeft className="h-4 w-4" /> Tous les producteurs
         </Link>
 

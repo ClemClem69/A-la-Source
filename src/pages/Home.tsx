@@ -111,7 +111,7 @@ export default function Home() {
               Qualité, fraîcheur et soutien à l'agriculture française.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/catalogue" className="btn-secondary bg-white text-primary-700 border-white hover:bg-primary-50">
+              <Link to="/catalogue/" className="btn-secondary bg-white text-primary-700 border-white hover:bg-primary-50">
                 Découvrir le catalogue <ArrowRight className="h-4 w-4" />
               </Link>
               <Link to="/comment-ca-marche" className="btn-outline border-white text-white hover:bg-white/10">
@@ -148,7 +148,7 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <h2 className="font-serif text-3xl font-bold text-stone-800">Produits de saison</h2>
-          <Link to="/catalogue" className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
+          <Link to="/catalogue/" className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
             Voir tout <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -194,7 +194,7 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="font-serif text-3xl font-bold text-stone-800">Nos producteurs</h2>
-          <Link to="/producteurs" className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
+          <Link to="/producteurs/" className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
             Voir tout <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

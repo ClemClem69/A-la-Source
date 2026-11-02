@@ -57,7 +57,7 @@ function ScrollToTop() {
 
 function BlogRedirect() {
   const { slug } = useParams();
-  return <Navigate to={`/actualites/${slug}`} replace />;
+  return <Navigate to={`/actualites/${slug}/`} replace />;
 }
 
 function NonProducerRoute({ children }: { children: ReactNode }) {
@@ -96,7 +96,7 @@ function App() {
                 <Route path="/producteur/:id" element={<ProducerDetail />} />
                 <Route path="/actualites" element={<Blog />} />
                 <Route path="/actualites/:slug" element={<BlogDetail />} />
-                <Route path="/blog" element={<Navigate to="/actualites" replace />} />
+                <Route path="/blog" element={<Navigate to="/actualites/" replace />} />
                 <Route path="/blog/:slug" element={<BlogRedirect />} />
                 <Route path="/connexion" element={<Login />} />
                 <Route path="/inscription" element={<Register />} />

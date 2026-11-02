@@ -95,7 +95,7 @@ export default function BlogDetail() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">
         <p className="text-stone-500">Article introuvable.</p>
-        <Link to="/actualites" className="btn-primary mt-4">Voir toutes les actualités</Link>
+        <Link to="/actualites/" className="btn-primary mt-4">Voir toutes les actualités</Link>
       </div>
     );
   }
@@ -155,7 +155,7 @@ export default function BlogDetail() {
         </script>
       </Helmet>
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
-      <Link to="/actualites" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mb-4">
+      <Link to="/actualites/" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mb-4">
         <ArrowLeft className="h-4 w-4" /> Toutes les actualités
       </Link>
 
