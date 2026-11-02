@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Routes, Route, useLocation, useParams } from '
 import type { ReactNode } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
+import AnalyticsTracker from './AnalyticsTracker';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -83,6 +84,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <BrowserRouter>
+          <AnalyticsTracker />
           <ScrollToTop />
           <div className="flex min-h-screen flex-col">
             <Header />
