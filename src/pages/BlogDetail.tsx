@@ -2,25 +2,46 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import SeoMetadata from '../components/SeoMetadata';
 import { supabase } from '../lib/supabase';
 import { sanitizeArticleContent } from '../lib/articleContent';
 import type { BlogPost } from '../lib/types';
 import { formatDate } from '../lib/utils';
 import NewsletterSignup from '../components/NewsletterSignup';
 
+const relatedArticleSlugs: Record<string, string[]> = {
+  'fruits-et-legumes-de-saison-en-octobre-que-manger-en-france': [
+    'circuits-courts-un-enjeu-majeur-pour-l-agriculture-de-demain',
+  ],
+  'circuits-courts-un-enjeu-majeur-pour-l-agriculture-de-demain': [
+    'fruits-et-legumes-de-saison-en-octobre-que-manger-en-france',
+  ],
+};
+
 function stripHtml(value: string): string {
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function makeMetaDescription(excerpt: string | null | undefined, content: string | null | undefined): string {
+function makeMetaDescription(
+  slug: string | undefined,
+  excerpt: string | null | undefined,
+  content: string | null | undefined,
+): string {
+  if (slug === 'circuits-courts-un-enjeu-majeur-pour-l-agriculture-de-demain') {
+    return 'Les circuits courts permettent de rapprocher producteurs et consommateurs en limitant les intermédiaires.';
+  }
+
   const cleanExcerpt = stripHtml(excerpt ?? '');
-  if (cleanExcerpt) return cleanExcerpt;
-
   const cleanContent = stripHtml(content ?? '');
-  if (!cleanContent) return 'Découvrez cet article sur Mon Marché Futé.';
-  if (cleanContent.length <= 155) return cleanContent;
+  const source = cleanExcerpt.length >= 50 ? cleanExcerpt : cleanContent || cleanExcerpt;
+  if (!source) return 'Consultez cet article publié par Mon marché futé.';
+  if (!/[.!?]$/.test(source)) {
+    const sentenceEnd = source.search(/[.!?]/);
+    if (sentenceEnd >= 50) return source.slice(0, sentenceEnd + 1);
+  }
+  if (source.length <= 155) return source;
 
-  const shortened = cleanContent.slice(0, 155);
+  const shortened = source.slice(0, 155);
   const lastSpace = shortened.lastIndexOf(' ');
   return shortened.slice(0, lastSpace > 0 ? lastSpace : 155).trim();
 }
@@ -57,12 +78,14 @@ export default function BlogDetail() {
 
       setRelatedPosts([]);
       setRelatedPostsError(null);
+      const relatedSlugs = relatedArticleSlugs[slug] ?? [];
+      if (relatedSlugs.length === 0) return;
 
       const { data, error } = await supabase
         .from('blog_posts')
         .select('*')
         .not('published_at', 'is', null)
-        .neq('slug', slug)
+        .in('slug', relatedSlugs)
         .order('published_at', { ascending: false })
         .limit(3);
 
@@ -85,46 +108,45 @@ export default function BlogDetail() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
-      </div>
+      <>
+        <SeoMetadata
+          title="Article | Actualités Mon marché futé"
+          description="Consultez les actualités de Mon marché futé."
+          indexable={false}
+        />
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
+        </div>
+      </>
     );
   }
 
   if (!post) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <p className="text-stone-500">Article introuvable.</p>
-        <Link to="/actualites/" className="btn-primary mt-4">Voir toutes les actualités</Link>
-      </div>
+      <>
+        <SeoMetadata title="Article introuvable | Mon marché futé" description="Cet article n’est pas disponible." indexable={false} />
+        <div className="mx-auto max-w-7xl px-4 py-16 text-center">
+          <p className="text-stone-500">Article introuvable.</p>
+          <Link to="/actualites/" className="btn-primary mt-4">Voir toutes les actualités</Link>
+        </div>
+      </>
     );
   }
 
-  const description = makeMetaDescription(post.excerpt, post.content);
+  const description = makeMetaDescription(post.slug, post.excerpt, post.content);
   const canonicalUrl = `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}/`;
   const imageUrl = post.image_url ? new URL(post.image_url, 'https://monmarchefute.com').toString() : null;
-  const dateModified = (post as BlogPost & { updated_at?: string | null }).updated_at || post.published_at;
+  const dateModified = (post as BlogPost & { updated_at?: string | null }).updated_at;
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
     ...(imageUrl ? { image: [imageUrl] } : {}),
     datePublished: post.published_at,
-    dateModified,
+    ...(dateModified ? { dateModified } : {}),
+    description,
     inLanguage: 'fr-FR',
-    author: {
-      '@type': 'Organization',
-      name: 'Mon Marché Futé',
-      url: 'https://monmarchefute.com',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Mon Marché Futé',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://monmarchefute.com/favicon.png',
-      },
-    },
+    publisher: { '@id': 'https://monmarchefute.com/#organization' },
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': canonicalUrl,
@@ -137,19 +159,14 @@ export default function BlogDetail() {
 
   return (
     <>
+      <SeoMetadata
+        title={`${post.title} | Mon marché futé`}
+        description={description}
+        canonicalPath={`/actualites/${encodeURIComponent(post.slug)}/`}
+        image={imageUrl ?? undefined}
+        type="article"
+      />
       <Helmet>
-        <title>{post.title} | Mon Marché Futé</title>
-        <meta name="description" content={description} />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={`${post.title} | Mon Marché Futé`} />
-        <meta property="og:description" content={description} />
-        <meta property="og:url" content={canonicalUrl} />
-        {imageUrl && <meta property="og:image" content={imageUrl} />}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${post.title} | Mon Marché Futé`} />
-        <meta name="twitter:description" content={description} />
-        {imageUrl && <meta name="twitter:image" content={imageUrl} />}
         <script type="application/ld+json">
           {JSON.stringify(articleJsonLd).replace(/</g, '\\u003c')}
         </script>
@@ -176,6 +193,15 @@ export default function BlogDetail() {
         />
       </div>
 
+      <aside className="mt-8 rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
+        <p>
+          Pour découvrir le fonctionnement des commandes et du retrait à Lyon, consultez la page{' '}
+          <Link to="/comment-ca-marche/" className="font-medium text-primary-700 underline hover:text-primary-800">
+            Comment ça marche ?
+          </Link>
+          .
+        </p>
+      </aside>
       {relatedPostsError && (
         <p role="alert" className="mt-8 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
           Impossible de charger les articles à lire aussi : {relatedPostsError}

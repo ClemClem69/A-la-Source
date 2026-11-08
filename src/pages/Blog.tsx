@@ -5,9 +5,19 @@ import { supabase } from '../lib/supabase';
 import type { BlogPost } from '../lib/types';
 import { formatDate } from '../lib/utils';
 import { Helmet } from 'react-helmet-async';
+import SeoMetadata from '../components/SeoMetadata';
 
+function articleSummary(post: BlogPost): string {
+  const source = (post.excerpt || post.content).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (source.length <= 220) return source;
+  const shortened = source.slice(0, 220);
+  const lastSpace = shortened.lastIndexOf(' ');
+  return `${shortened.slice(0, lastSpace > 0 ? lastSpace : 220).trim()}…`;
+}
 
 export default function Blog() {
+  const pageTitle = 'Actualités | Mon marché futé';
+  const pageDescription = 'Parcourez les articles de Mon Marché Futé sur les fruits et légumes, leur saisonnalité et les circuits courts.';
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,30 +39,28 @@ export default function Blog() {
     '@type': 'Blog',
     '@id': 'https://monmarchefute.com/actualites/#blog',
     url: 'https://monmarchefute.com/actualites/',
-    name: 'Actualités, produits de saison et conseils | Mon Marché Futé',
-    description: 'Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme.',
+    name: pageTitle,
+    description: pageDescription,
     inLanguage: 'fr-FR',
     isPartOf: { '@id': 'https://monmarchefute.com/#website' },
     publisher: { '@id': 'https://monmarchefute.com/#organization' },
+    blogPost: posts
+      .filter((post) => post.published_at)
+      .map((post) => ({
+        '@type': 'BlogPosting',
+        headline: post.title,
+        url: `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}/`,
+        datePublished: post.published_at,
+        description: articleSummary(post),
+        mainEntityOfPage: `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}/`,
+        publisher: { '@id': 'https://monmarchefute.com/#organization' },
+      })),
   };
 
   return (
     <>
+      <SeoMetadata title={pageTitle} description={pageDescription} canonicalPath="/actualites/" />
       <Helmet>
-        <title>Actualités, produits de saison et conseils | Mon Marché Futé</title>
-        <meta
-          name="description"
-          content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme."
-        />
-        <link rel="canonical" href="https://monmarchefute.com/actualites/" />
-        <meta property="og:title" content="Actualités, produits de saison et conseils | Mon Marché Futé" />
-        <meta property="og:description" content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme." />
-        <meta property="og:url" content="https://monmarchefute.com/actualites/" />
-        <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Actualités, produits de saison et conseils | Mon Marché Futé" />
-        <meta name="twitter:description" content="Retrouvez les actualités de Mon Marché Futé, les fruits et légumes de saison, des conseils pour acheter local et les nouveautés de la plateforme." />
-        <meta name="twitter:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <script type="application/ld+json">{JSON.stringify(blogStructuredData).replace(/</g, '\\u003c')}</script>
       </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -80,9 +88,13 @@ export default function Blog() {
                 )}
               </div>
               <div className="p-4">
-                <p className="text-xs text-stone-400 mb-1">{post.published_at && formatDate(post.published_at)}</p>
+                {post.published_at && (
+                  <time dateTime={post.published_at} className="text-xs text-stone-400 mb-1 block">
+                    {formatDate(post.published_at)}
+                  </time>
+                )}
                 <h3 className="font-semibold text-stone-800 group-hover:text-primary-700 transition-colors">{post.title}</h3>
-                <p className="text-sm text-stone-500 mt-1 line-clamp-2">{post.excerpt}</p>
+                <p className="text-sm text-stone-500 mt-1 line-clamp-2">{articleSummary(post)}</p>
               </div>
             </Link>
           ))}

@@ -1,11 +1,68 @@
-import { Leaf, Truck, Shield, Heart, MapPin, CreditCard, Package } from 'lucide-react';
+import { Leaf, Shield, Heart, MapPin, Package } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import NewsletterSignup from '../components/NewsletterSignup';
+import SeoMetadata from '../components/SeoMetadata';
 
 interface StaticPageProps {
   page: 'about' | 'how-it-works' | 'engagements' | 'faq' | 'cgv' | 'legal' | 'privacy' | 'producer';
 }
+
+const pageMetadata: Record<StaticPageProps['page'], {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  indexable: boolean;
+}> = {
+  about: {
+    title: 'Qui sommes-nous ? | Mon marché futé',
+    description: 'Découvrez la mission de Mon marché futé et son approche pour organiser les commandes et le retrait des fruits et légumes.',
+    canonicalPath: '/qui-sommes-nous/',
+    indexable: true,
+  },
+  'how-it-works': {
+    title: 'Comment fonctionne Mon marché futé à Lyon ?',
+    description: 'Découvrez Mon marché futé à Lyon : commande de fruits et légumes à l’unité, retrait hebdomadaire dans le centre-ville et informations pratiques sur le retrait.',
+    canonicalPath: '/comment-ca-marche/',
+    indexable: true,
+  },
+  engagements: {
+    title: 'Engagements | Mon marché futé',
+    description: 'Les principes et engagements présentés par Mon marché futé.',
+    canonicalPath: '/engagements/',
+    indexable: false,
+  },
+  faq: {
+    title: 'Questions fréquentes | Mon marché futé',
+    description: 'Réponses aux questions courantes sur le fonctionnement du service Mon marché futé.',
+    canonicalPath: '/faq/',
+    indexable: false,
+  },
+  cgv: {
+    title: 'Conditions générales de vente | Mon marché futé',
+    description: 'Conditions générales de vente de Mon marché futé.',
+    canonicalPath: '/cgv/',
+    indexable: false,
+  },
+  legal: {
+    title: 'Mentions légales | Mon marché futé',
+    description: 'Mentions légales de Mon marché futé.',
+    canonicalPath: '/mentions-legales/',
+    indexable: false,
+  },
+  privacy: {
+    title: 'Politique de confidentialité | Mon marché futé',
+    description: 'Informations sur la collecte et l’utilisation des données par Mon marché futé.',
+    canonicalPath: '/confidentialite/',
+    indexable: false,
+  },
+  producer: {
+    title: 'Proposer ses produits | Mon marché futé',
+    description: 'Informations destinées aux producteurs qui souhaitent proposer leurs produits sur Mon marché futé.',
+    canonicalPath: '/devenir-producteur/',
+    indexable: true,
+  },
+};
 
 export default function StaticPage({ page }: StaticPageProps) {
   const content = getContent(page);
@@ -14,37 +71,43 @@ export default function StaticPage({ page }: StaticPageProps) {
     '@type': 'AboutPage',
     '@id': 'https://monmarchefute.com/qui-sommes-nous/#webpage',
     url: 'https://monmarchefute.com/qui-sommes-nous/',
-    name: 'Qui sommes-nous ? | Mon Marché Futé',
-    description: 'Découvrez Mon Marché Futé, la plateforme qui relie les consommateurs aux producteurs français pour une vente directe, locale et plus équitable.',
+    name: pageMetadata.about.title,
+    description: pageMetadata.about.description,
     inLanguage: 'fr-FR',
     isPartOf: { '@id': 'https://monmarchefute.com/#website' },
     about: { '@id': 'https://monmarchefute.com/#organization' },
     mainEntity: { '@id': 'https://monmarchefute.com/#organization' },
   };
+  const howItWorksStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://monmarchefute.com/comment-ca-marche/#webpage',
+    url: 'https://monmarchefute.com/comment-ca-marche/',
+    name: pageMetadata['how-it-works'].title,
+    description: pageMetadata['how-it-works'].description,
+    inLanguage: 'fr-FR',
+    isPartOf: { '@id': 'https://monmarchefute.com/#website' },
+    about: { '@id': 'https://monmarchefute.com/#organization' },
+  };
 
   return (
     <>
+      <SeoMetadata {...pageMetadata[page]} />
       {page === 'about' && (
         <Helmet>
-          <title>Qui sommes-nous ? | Mon Marché Futé</title>
-          <meta name="description" content="Découvrez Mon Marché Futé, la plateforme qui relie les consommateurs aux producteurs français pour une vente directe, locale et plus équitable." />
-          <link rel="canonical" href="https://monmarchefute.com/qui-sommes-nous/" />
-          <meta property="og:title" content="Qui sommes-nous ? | Mon Marché Futé" />
-          <meta property="og:description" content="Découvrez Mon Marché Futé, la plateforme qui relie les consommateurs aux producteurs français pour une vente directe, locale et plus équitable." />
-          <meta property="og:url" content="https://monmarchefute.com/qui-sommes-nous/" />
-          <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="Qui sommes-nous ? | Mon Marché Futé" />
-          <meta name="twitter:description" content="Découvrez Mon Marché Futé, la plateforme qui relie les consommateurs aux producteurs français pour une vente directe, locale et plus équitable." />
-          <meta name="twitter:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
           <script type="application/ld+json">{JSON.stringify(aboutStructuredData).replace(/</g, '\\u003c')}</script>
+        </Helmet>
+      )}
+      {page === 'how-it-works' && (
+        <Helmet>
+          <script type="application/ld+json">{JSON.stringify(howItWorksStructuredData).replace(/</g, '\\u003c')}</script>
         </Helmet>
       )}
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="font-serif text-3xl font-bold text-stone-800 mb-6">{content.title}</h1>
         <div className="prose prose-stone max-w-none">{content.body}</div>
-        {page === 'about' && (
-          <div className="mt-10">
+        {(page === 'about' || page === 'how-it-works') && (
+          <div id={page === 'how-it-works' ? 'preinscription' : undefined} className="mt-10">
             <NewsletterSignup />
           </div>
         )}
@@ -141,45 +204,61 @@ function getContent(page: string) {
       };
     case 'how-it-works':
       return {
-        title: 'Comment ça marche ?',
+        title: 'Comment fonctionne Mon marché futé à Lyon ?',
         body: (
           <div className="space-y-8">
-            <div className="flex gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-primary-700">
-                <Leaf className="h-6 w-6" />
+            <section>
+              <h2 className="text-2xl font-semibold text-stone-800 mb-3">Mon marché fûté à Lyon</h2>
+              <p className="text-stone-600 leading-relaxed">
+                Mon marché futé vise à rendre les fruits et légumes plus accessibles grâce à une organisation simple des commandes et du retrait. Le service s’organise autour d’un point de retrait dans le centre-ville de Lyon.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold text-stone-800 mb-3">La commande de fruits et légumes à l’unité</h2>
+              <p className="text-stone-600 leading-relaxed">
+                Les fruits et légumes se commandent à l’unité, en ligne.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold text-stone-800 mb-3">Un retrait une fois par semaine dans le centre-ville</h2>
+              <p className="text-stone-600 leading-relaxed">
+                Le retrait a lieu une fois par semaine dans le centre-ville de Lyon. Les informations pratiques sur le retrait, notamment l’adresse, le jour et les horaires, sont communiquées avant chaque retrait.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold text-stone-800 mb-3">À qui s’adresse le service</h2>
+              <p className="text-stone-600 leading-relaxed">
+                Le service s’adresse aux particuliers, aux familles comme aux personnes seules, qui peuvent se déplacer dans le centre-ville de Lyon pour retirer leur commande.
+              </p>
+            </section>
+
+            <section aria-labelledby="how-it-works-faq">
+              <h2 id="how-it-works-faq" className="text-2xl font-semibold text-stone-800 mb-4">FAQ pratique</h2>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-stone-800">Comment commander les fruits et légumes ?</h3>
+                  <p className="mt-1 text-stone-600">Les fruits et légumes se commandent à l’unité, en ligne.</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-stone-800">Où et quand retirer une commande ?</h3>
+                  <p className="mt-1 text-stone-600">Le retrait a lieu une fois par semaine dans le centre-ville de Lyon. L’adresse, le jour et les horaires sont communiqués avant chaque retrait.</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-stone-800">À qui s’adresse le service ?</h3>
+                  <p className="mt-1 text-stone-600">Aux particuliers, aux familles et aux personnes seules qui peuvent se déplacer dans le centre-ville de Lyon.</p>
+                </div>
               </div>
-              <div>
-                <h2 className="font-semibold text-lg text-stone-800 mb-1">1. Choisissez vos produits</h2>
-                <p className="text-stone-600">Parcourez le catalogue de fruits et légumes proposés par nos producteurs français. Filtrez par catégorie, par producteur, par saison ou par certification bio.</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-primary-700">
-                <Truck className="h-6 w-6" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-lg text-stone-800 mb-1">2. Commandez en ligne</h2>
-                <p className="text-stone-600">Ajoutez vos produits au panier, choisissez votre point de retrait et sélectionnez un créneau qui vous convient.</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-primary-700">
-                <CreditCard className="h-6 w-6" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-lg text-stone-800 mb-1">3. Payez en toute sécurité</h2>
-                <p className="text-stone-600">Le paiement est sécurisé par Stripe. Vos données bancaires ne sont jamais stockées sur nos serveurs.</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-primary-700">
-                <Heart className="h-6 w-6" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-lg text-stone-800 mb-1">4. Dégustez !</h2>
-                <p className="text-stone-600">Recevez vos produits frais directement du producteur et suivez le statut de votre commande en temps réel.</p>
-              </div>
-            </div>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold text-stone-800 mb-3">Une question sur le fonctionnement ?</h2>
+              <Link to="/contact" className="font-medium text-primary-700 underline hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700">
+                Contactez Mon marché futé
+              </Link>
+            </section>
           </div>
         ),
       };
@@ -261,12 +340,30 @@ function getContent(page: string) {
         title: 'Politique de confidentialité',
         body: (
           <div className="space-y-4 text-stone-600">
-            <p><strong>Collecte de données :</strong> Nous collectons les informations nécessaires au traitement de vos commandes : nom, email, adresse, téléphone.</p>
-            <p><strong>Utilisation :</strong> Vos données sont utilisées pour traiter vos commandes, vous informer du statut et améliorer notre service.</p>
-            <p><strong>Partage :</strong> Vos informations de retrait sont partagées avec le producteur concerné. Nous ne vendons jamais vos données.</p>
-            <p><strong>Droit RGPD :</strong> Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Utilisez le formulaire Contactez-nous pour toute demande.</p>
-            <p><strong>Cookies :</strong> Nous utilisons des cookies essentiels au fonctionnement de la plateforme (session d'authentification, panier).</p>
-            <p><strong>Sécurité :</strong> Vos données sont stockées de manière sécurisée. Les mots de passe sont hashés et jamais stockés en clair.</p>
+            <h2 className="text-xl font-semibold text-stone-800">Préinscription</h2>
+            <p>
+              Lorsque vous demandez à être informé du lancement, votre adresse e-mail est enregistrée dans Supabase afin de vous envoyer une information liée à cette demande. Elle n’est pas transmise à Google Analytics.
+            </p>
+            <h2 className="text-xl font-semibold text-stone-800">Mesure d’audience et consentement</h2>
+            <p>
+              Avec votre accord, Google Analytics 4 (Google) mesure la fréquentation du site et les clics sur les appels à la préinscription. Les événements analytiques concernés sont les pages consultées, les clics sur ces appels et les inscriptions effectivement enregistrées. Aucun e-mail, hash d’e-mail, token, identifiant utilisateur ou contenu de formulaire n’est envoyé dans ces événements.
+            </p>
+            <p>
+              Google Analytics n’est chargé qu’après acceptation de la mesure d’audience. Vous pouvez accepter ou refuser dans la bannière, puis modifier votre choix à tout moment avec le bouton « Gérer le consentement analytique » en pied de page. Votre choix est mémorisé dans le stockage local de votre navigateur. Le refus n’empêche pas l’utilisation du formulaire de préinscription.
+            </p>
+            <p>
+              Les signaux de stockage analytique et publicitaire de Google Consent Mode v2 sont configurés selon votre choix. Le stockage publicitaire, l’utilisation des données à des fins publicitaires et la personnalisation des annonces restent refusés.
+            </p>
+            <p>
+              La durée de conservation applicable aux données Google Analytics doit être confirmée à partir du paramétrage du compte GA4 avant publication de cette information.
+            </p>
+            <h2 className="text-xl font-semibold text-stone-800">Vos droits</h2>
+            <p>
+              Conformément au RGPD, vous pouvez demander l’accès à vos données, leur rectification ou leur effacement, vous opposer à certains traitements et retirer votre consentement à la mesure d’audience. Pour exercer vos droits concernant les données de préinscription, utilisez le formulaire de contact du site. Vous pouvez aussi modifier le consentement analytique depuis le pied de page.
+            </p>
+            <p>
+              Vous pouvez introduire une réclamation auprès de la CNIL. Les informations de contact du responsable de traitement et la durée de conservation définitive doivent être confirmées avant la mise en production de cette politique.
+            </p>
             <p className="text-sm text-stone-400 mt-6">Document à valeur indicative pour cette démonstration.</p>
           </div>
         ),

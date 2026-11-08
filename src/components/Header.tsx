@@ -2,11 +2,9 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { ShoppingCart, Menu, X, User, LogOut, LayoutDashboard, Leaf, Mail, Activity, Newspaper } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useCart } from '../contexts/CartContext';
 
 export default function Header() {
   const { profile, signOut } = useAuth();
-  const { totalItems } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -65,22 +63,6 @@ export default function Header() {
 
           {/* Right side */}
           <div className="flex items-center gap-2">
-            {/* Cart */}
-            {profile?.role !== 'producer' && (
-              <Link
-                to="/panier"
-                className="relative flex h-10 w-10 items-center justify-center rounded-lg text-stone-600 hover:bg-stone-100 transition-colors"
-                aria-label="Panier"
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary-500 px-1 text-xs font-bold text-white">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
-            )}
-
             {/* User menu */}
             {profile ? (
               <div className="relative">
@@ -195,44 +177,48 @@ export default function Header() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden flex h-10 w-10 items-center justify-center rounded-lg text-stone-600 hover:bg-stone-100"
-              aria-label="Menu"
+              className="md:hidden flex h-10 w-10 items-center justify-center rounded-lg text-stone-600 hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-navigation"
+              aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             >
               {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
         {/* Mobile menu */}
-        {menuOpen && (
-          <div className="md:hidden border-t border-stone-200 py-3 animate-slide-up">
-            <nav className="flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMenuOpen(false)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                    isActive(link.to)
-                      ? 'text-primary-700 bg-primary-50'
-                      : 'text-stone-600 hover:bg-stone-50'
-                  }`}
-                >
-                  {link.label}
+        <div
+          id="mobile-navigation"
+          hidden={!menuOpen}
+          className="md:hidden border-t border-stone-200 py-3 animate-slide-up"
+        >
+          <nav className="flex flex-col gap-1" aria-label="Navigation mobile">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setMenuOpen(false)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                  isActive(link.to)
+                    ? 'text-primary-700 bg-primary-50'
+                    : 'text-stone-600 hover:bg-stone-50'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            {!profile && (
+              <div className="flex gap-2 mt-2 px-3">
+                <Link to="/connexion" onClick={() => setMenuOpen(false)} className="btn-secondary flex-1">
+                  Connexion
                 </Link>
-              ))}
-              {!profile && (
-                <div className="flex gap-2 mt-2 px-3">
-                  <Link to="/connexion" onClick={() => setMenuOpen(false)} className="btn-secondary flex-1">
-                    Connexion
-                  </Link>
-                  <Link to="/inscription" onClick={() => setMenuOpen(false)} className="btn-primary flex-1">
-                    S'inscrire
-                  </Link>
-                </div>
-              )}
-            </nav>
-          </div>
-        )}
+                <Link to="/inscription" onClick={() => setMenuOpen(false)} className="btn-primary flex-1">
+                  S'inscrire
+                </Link>
+              </div>
+            )}
+          </nav>
+        </div>
       </div>
     </header>
   );

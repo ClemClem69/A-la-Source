@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
+import SeoMetadata from '../components/SeoMetadata';
 import { Search, SlidersHorizontal, Leaf } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Product, Category } from '../lib/types';
@@ -37,6 +38,8 @@ export default function Catalog() {
   }, []);
 
   const currentSeason = getCurrentSeason();
+  const pageTitle = 'Catalogue de fruits et légumes | Mon marché futé';
+  const pageDescription = 'Consultez le catalogue de fruits et légumes proposés à l’unité par Mon marché futé et inscrivez-vous pour recevoir les informations sur le lancement.';
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -86,8 +89,8 @@ export default function Catalog() {
     '@type': 'CollectionPage',
     '@id': 'https://monmarchefute.com/catalogue/#webpage',
     url: 'https://monmarchefute.com/catalogue/',
-    name: 'Catalogue de produits locaux | Mon Marché Futé',
-    description: 'Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français.',
+    name: pageTitle,
+    description: pageDescription,
     inLanguage: 'fr-FR',
     isPartOf: { '@id': 'https://monmarchefute.com/#website' },
     mainEntity: {
@@ -104,18 +107,8 @@ export default function Catalog() {
 
   return (
     <>
+      <SeoMetadata title={pageTitle} description={pageDescription} canonicalPath="/catalogue/" />
       <Helmet>
-        <title>Catalogue de produits locaux | Mon Marché Futé</title>
-        <meta name="description" content="Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français. Filtrez par saison, catégorie et agriculture biologique." />
-        <link rel="canonical" href="https://monmarchefute.com/catalogue/" />
-        <meta property="og:title" content="Catalogue de produits locaux | Mon Marché Futé" />
-        <meta property="og:description" content="Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français. Filtrez par saison, catégorie et agriculture biologique." />
-        <meta property="og:url" content="https://monmarchefute.com/catalogue/" />
-        <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Catalogue de produits locaux | Mon Marché Futé" />
-        <meta name="twitter:description" content="Parcourez notre catalogue de fruits et légumes frais proposés en vente directe par des producteurs français. Filtrez par saison, catégorie et agriculture biologique." />
-        <meta name="twitter:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <script type="application/ld+json">{JSON.stringify(catalogStructuredData).replace(/</g, '\\u003c')}</script>
       </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">

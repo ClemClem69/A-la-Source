@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Leaf } from 'lucide-react';
+import { openAnalyticsConsentSettings } from '../lib/analytics';
 
 export default function Footer() {
   return (
@@ -17,7 +18,7 @@ export default function Footer() {
               <span className="font-serif text-base font-bold text-white">Mon marché futé</span>
             </div>
             <p className="text-sm text-primary-200 leading-relaxed">
-              La plateforme qui connecte directement les producteurs français aux consommateurs pour des produits frais et sans intermédiaires.
+              Mon marché futé vise à rendre les fruits et légumes plus accessibles grâce à une organisation simple des commandes et du retrait dans le centre-ville de Lyon.
             </p>
           </div>
 
@@ -27,7 +28,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="hover:text-white transition-colors">Accueil</Link></li>
               <li><Link to="/catalogue/" className="hover:text-white transition-colors">Catalogue</Link></li>
-              <li><Link to="/producteurs/" className="hover:text-white transition-colors">Nos producteurs</Link></li>
+              <li><Link to="/producteurs/" className="hover:text-white transition-colors">Producteurs</Link></li>
               <li><Link to="/actualites/" className="hover:text-white transition-colors">Actualités</Link></li>
               <li><Link to="/qui-sommes-nous/" className="hover:text-white transition-colors">Qui sommes-nous ?</Link></li>
               <li><Link to="/comment-ca-marche" className="hover:text-white transition-colors">Comment ça marche</Link></li>
@@ -42,13 +43,22 @@ export default function Footer() {
               <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
               <li><Link to="/contact" className="hover:text-white transition-colors">Contactez-nous</Link></li>
               <li><Link to="/devenir-producteur" className="hover:text-white transition-colors">Vendre sur le site</Link></li>
+              <li>
+                <button
+                  type="button"
+                  onClick={openAnalyticsConsentSettings}
+                  className="text-left hover:text-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  Gérer le consentement analytique
+                </button>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-8 pt-8 border-t border-primary-800">
           <p className="text-center text-sm text-primary-300">
-            © {new Date().getFullYear()} Mon marché futé. Vente directe, qualité, fraîcheur.
+            © {new Date().getFullYear()} Mon marché futé.
           </p>
         </div>
       </div>

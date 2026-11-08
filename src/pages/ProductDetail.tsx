@@ -6,6 +6,7 @@ import type { Product, Review } from '../lib/types';
 import { formatPrice, formatUnit, getSeasonLabel } from '../lib/utils';
 import { useCart } from '../contexts/CartContext';
 import StarRating from '../components/StarRating';
+import SeoMetadata from '../components/SeoMetadata';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -51,36 +52,58 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
-      </div>
+      <>
+        <SeoMetadata title="Produit | Mon marché futé" description="Fiche produit de Mon marché futé." indexable={false} />
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
+        </div>
+      </>
     );
   }
 
   if (!product) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <p className="text-stone-500">Produit introuvable.</p>
-        <Link to="/catalogue/" className="btn-primary mt-4">Retour au catalogue</Link>
-      </div>
+      <>
+        <SeoMetadata title="Produit introuvable | Mon marché futé" description="Cette fiche produit n’est pas disponible." indexable={false} />
+        <div className="mx-auto max-w-7xl px-4 py-16 text-center">
+          <p className="text-stone-500">Produit introuvable.</p>
+          <Link to="/catalogue/" className="btn-primary mt-4">Retour au catalogue</Link>
+        </div>
+      </>
     );
   }
 
   if (product.pricing_status === 'pending') {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <p className="text-amber-700 bg-amber-50 p-4 rounded-lg inline-block">
-          Ce produit est en attente de validation du prix. Il ne peut pas être acheté pour le moment.
-        </p>
-        <Link to="/catalogue/" className="btn-primary mt-4">Retour au catalogue</Link>
-      </div>
+      <>
+        <SeoMetadata
+          title={`${product.name} | Mon marché futé`}
+          description="Cette fiche produit n’est pas actuellement disponible à la commande."
+          indexable={false}
+        />
+        <div className="mx-auto max-w-7xl px-4 py-16 text-center">
+          <p className="text-amber-700 bg-amber-50 p-4 rounded-lg inline-block">
+            Ce produit est en attente de validation du prix. Il ne peut pas être acheté pour le moment.
+          </p>
+          <Link to="/catalogue/" className="btn-primary mt-4">Retour au catalogue</Link>
+        </div>
+      </>
     );
   }
 
   const avgRating = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <SeoMetadata
+        title={`${product.name} | Mon marché futé`}
+        description={product.description?.trim() || `Fiche produit : ${product.name} sur Mon marché futé.`}
+        canonicalPath={`/produit/${encodeURIComponent(product.id)}/`}
+        image={product.image_url ? new URL(product.image_url, 'https://monmarchefute.com').toString() : undefined}
+        type="product"
+        indexable={false}
+      />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <Link to="/catalogue/" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-primary-600 mb-4">
         <ArrowLeft className="h-4 w-4" /> Retour au catalogue
       </Link>
@@ -213,6 +236,7 @@ export default function ProductDetail() {
           </div>
         )}
       </section>
-    </div>
+      </div>
+    </>
   );
 }

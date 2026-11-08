@@ -41,7 +41,9 @@ export default function AdminProducerAccount() {
         try {
           const responseBody = await response.clone().json();
           if (typeof responseBody?.error === 'string') message = responseBody.error;
-        } catch {}
+        } catch {
+          // Keep the invocation error when its response body is not JSON.
+        }
       }
 
       setError(message);

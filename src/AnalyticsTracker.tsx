@@ -1,36 +1,32 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { useLocation } from 'react-router-dom';
-
-declare global {
-  interface Window {
-    gtag?: (
-      command: 'event',
-      eventName: 'page_view',
-      eventParams: {
-        page_path: string;
-        page_location: string;
-        page_title: string;
-      },
-    ) => void;
-  }
-}
+import {
+  getAnalyticsConsent,
+  subscribeToAnalyticsConsent,
+  trackAnalyticsEvent,
+} from './lib/analytics';
 
 function AnalyticsTracker() {
   const location = useLocation();
+  const consent = useSyncExternalStore(
+    subscribeToAnalyticsConsent,
+    getAnalyticsConsent,
+    () => null,
+  );
   const lastTrackedLocationKey = useRef<string | null>(null);
 
   useEffect(() => {
-    if (typeof window.gtag !== 'function' || lastTrackedLocationKey.current === location.key) {
+    if (consent !== 'accepted' || lastTrackedLocationKey.current === location.key) {
       return;
     }
 
     lastTrackedLocationKey.current = location.key;
-    window.gtag('event', 'page_view', {
-      page_path: location.pathname + location.search,
-      page_location: window.location.href,
+    trackAnalyticsEvent('page_view', {
+      page_path: location.pathname,
+      page_location: `${window.location.origin}${location.pathname}`,
       page_title: document.title,
     });
-  }, [location]);
+  }, [consent, location]);
 
   return null;
 }

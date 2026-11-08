@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CheckCircle2, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import SeoMetadata from '../components/SeoMetadata';
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
@@ -30,22 +31,35 @@ export default function Contact() {
 
   if (submitted) {
     return (
-      <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 mb-4">
-          <CheckCircle2 className="h-8 w-8 text-green-600" />
+      <>
+        <SeoMetadata
+          title="Message envoyé | Mon marché futé"
+          description="Confirmation de la réception de votre message par Mon marché futé."
+          indexable={false}
+        />
+        <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 mb-4">
+            <CheckCircle2 className="h-8 w-8 text-green-600" />
+          </div>
+          <h1 className="font-serif text-3xl font-bold text-stone-800 mb-2">Message envoyé</h1>
+          <p className="text-stone-500">Merci pour votre message. Nous reviendrons vers vous dès que possible.</p>
         </div>
-        <h1 className="font-serif text-3xl font-bold text-stone-800 mb-2">Message envoyé</h1>
-        <p className="text-stone-500">Merci pour votre message. Nous reviendrons vers vous dès que possible.</p>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="font-serif text-3xl font-bold text-stone-800 mb-2">Contactez-nous</h1>
-      <p className="text-stone-500 mb-8">Une question ou besoin d'aide ? Écrivez-nous via ce formulaire.</p>
+    <>
+      <SeoMetadata
+        title="Contact | Mon marché futé"
+        description="Contactez Mon marché futé pour poser une question ou transmettre un message via le formulaire."
+        canonicalPath="/contact/"
+      />
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="font-serif text-3xl font-bold text-stone-800 mb-2">Contactez-nous</h1>
+        <p className="text-stone-500 mb-8">Une question ou besoin d'aide ? Écrivez-nous via ce formulaire.</p>
 
-      <form onSubmit={handleSubmit} className="card p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="card p-6 space-y-4">
         <div>
           <label htmlFor="name" className="label">Nom</label>
           <input id="name" name="name" type="text" required className="input" />
@@ -67,7 +81,8 @@ export default function Contact() {
           <Send className="h-4 w-4" />
           {loading ? 'Envoi...' : 'Envoyer le message'}
         </button>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 }

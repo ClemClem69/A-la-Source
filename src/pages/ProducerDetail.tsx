@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import type { Producer, Product, Review } from '../lib/types';
 import ProductCard from '../components/ProductCard';
 import StarRating from '../components/StarRating';
+import SeoMetadata from '../components/SeoMetadata';
 
 export default function ProducerDetail() {
   const { id } = useParams();
@@ -49,24 +50,38 @@ export default function ProducerDetail() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
-      </div>
+      <>
+        <SeoMetadata title="Producteur | Mon marché futé" description="Fiche producteur de Mon marché futé." indexable={false} />
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
+        </div>
+      </>
     );
   }
 
   if (!producer) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <p className="text-stone-500">Producteur introuvable.</p>
-        <Link to="/producteurs/" className="btn-primary mt-4">Voir tous les producteurs</Link>
-      </div>
+      <>
+        <SeoMetadata title="Producteur introuvable | Mon marché futé" description="Cette fiche producteur n’est pas disponible." indexable={false} />
+        <div className="mx-auto max-w-7xl px-4 py-16 text-center">
+          <p className="text-stone-500">Producteur introuvable.</p>
+          <Link to="/producteurs/" className="btn-primary mt-4">Voir tous les producteurs</Link>
+        </div>
+      </>
     );
   }
 
   const avgRating = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   return (
+    <>
+    <SeoMetadata
+      title={`${producer.company_name} | Producteur | Mon marché futé`}
+      description={producer.description?.trim() || `Fiche du producteur ${producer.company_name} sur Mon marché futé.`}
+      canonicalPath={`/producteur/${encodeURIComponent(producer.id)}/`}
+      image={producer.logo_url ? new URL(producer.logo_url, 'https://monmarchefute.com').toString() : undefined}
+      indexable={false}
+    />
     <div>
       {/* Cover */}
       <div className="relative h-48 md:h-64 overflow-hidden bg-primary-200">
@@ -197,5 +212,6 @@ export default function ProducerDetail() {
         )}
       </div>
     </div>
+    </>
   );
 }

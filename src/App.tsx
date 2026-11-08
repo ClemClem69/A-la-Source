@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { BrowserRouter, Navigate, Routes, Route, useLocation, useParams } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
@@ -6,7 +7,9 @@ import { CartProvider } from './contexts/CartContext';
 import AnalyticsTracker from './AnalyticsTracker';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import AnalyticsConsentBanner from './components/AnalyticsConsentBanner';
 import ProtectedRoute from './components/ProtectedRoute';
+import SeoMetadata from './components/SeoMetadata';
 
 // Public pages
 import Home from './pages/Home';
@@ -56,9 +59,42 @@ function ScrollToTop() {
   return null;
 }
 
+function RouteRobots() {
+  const location = useLocation();
+  const privateRoute = /^\/(connexion|inscription|mot-de-passe-oublie|panier|commander|commandes|profil|admin)(\/|$)/.test(location.pathname)
+    || /^\/producteur(?:\/(inscription|produits|commandes))?\/?$/.test(location.pathname);
+  const authCallback = /(?:^|[?&#])type=(signup|recovery|email_change)(?:&|$)/.test(`${location.search}${location.hash}`);
+
+  return privateRoute || authCallback
+    ? <Helmet><meta name="robots" content="noindex,nofollow" /></Helmet>
+    : null;
+}
+
 function BlogRedirect() {
   const { slug } = useParams();
-  return <Navigate to={`/actualites/${slug}/`} replace />;
+  return (
+    <>
+      <SeoMetadata
+        title="Redirection vers les actualités | Mon marché futé"
+        description="Retrouvez cet article dans les actualités de Mon marché futé."
+        indexable={false}
+      />
+      <Navigate to={`/actualites/${slug}/`} replace />
+    </>
+  );
+}
+
+function BlogIndexRedirect() {
+  return (
+    <>
+      <SeoMetadata
+        title="Actualités | Mon marché futé"
+        description="Retrouvez les actualités de Mon marché futé."
+        indexable={false}
+      />
+      <Navigate to="/actualites/" replace />
+    </>
+  );
 }
 
 function NonProducerRoute({ children }: { children: ReactNode }) {
@@ -85,6 +121,8 @@ function App() {
       <CartProvider>
         <BrowserRouter>
           <AnalyticsTracker />
+          <AnalyticsConsentBanner />
+          <RouteRobots />
           <ScrollToTop />
           <div className="flex min-h-screen flex-col">
             <Header />
@@ -98,7 +136,7 @@ function App() {
                 <Route path="/producteur/:id" element={<ProducerDetail />} />
                 <Route path="/actualites" element={<Blog />} />
                 <Route path="/actualites/:slug" element={<BlogDetail />} />
-                <Route path="/blog" element={<Navigate to="/actualites/" replace />} />
+                <Route path="/blog" element={<BlogIndexRedirect />} />
                 <Route path="/blog/:slug" element={<BlogRedirect />} />
                 <Route path="/connexion" element={<Login />} />
                 <Route path="/inscription" element={<Register />} />

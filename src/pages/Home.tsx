@@ -1,50 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Leaf, Truck, Shield, Heart, ArrowRight } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import type { Product, Producer } from '../lib/types';
-import ProductCard from '../components/ProductCard';
-import ProducerCard from '../components/ProducerCard';
+import { Link } from 'react-router-dom';
+import SeoMetadata from '../components/SeoMetadata';
 import NewsletterSignup from '../components/NewsletterSignup';
-import { getCurrentSeason } from '../lib/utils';
+import { trackAnalyticsEvent } from '../lib/analytics';
+
+const pageTitle = 'Fruits et légumes à prix accessibles à Lyon | Mon marché futé';
+const pageDescription = 'Découvrez Mon marché futé : un projet de fruits et légumes à l’unité, avec retrait hebdomadaire prévu dans Lyon centre. Soyez informé du lancement.';
 
 export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [featuredProducers, setFeaturedProducers] = useState<Producer[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadData() {
-      const [productsRes, producersRes] = await Promise.all([
-        supabase
-          .from('products')
-          .select('*, producer:producers(*), category:categories(*)')
-          .eq('is_active', true)
-          .eq('is_featured', true)
-          .eq('pricing_status', 'validated')
-          .limit(8),
-        supabase
-          .from('producers')
-          .select('*')
-          .eq('status', 'active')
-          .limit(3),
-      ]);
-
-      setFeaturedProducts((productsRes.data as unknown as Product[]) || []);
-      setFeaturedProducers((producersRes.data as Producer[]) || []);
-      setLoading(false);
-    }
-    loadData();
-  }, []);
-
-  const season = getCurrentSeason();
-  const seasonLabel: Record<string, string> = {
-    printemps: 'Printemps',
-    ete: 'Été',
-    automne: 'Automne',
-    hiver: 'Hiver',
-  };
   const homeStructuredData = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -60,8 +23,8 @@ export default function Home() {
         '@type': 'WebPage',
         '@id': 'https://monmarchefute.com/#webpage',
         url: 'https://monmarchefute.com/',
-        name: 'Mon Marché Futé — Produits locaux en vente directe',
-        description: 'Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale.',
+        name: pageTitle,
+        description: pageDescription,
         isPartOf: { '@id': 'https://monmarchefute.com/#website' },
         about: { '@id': 'https://monmarchefute.com/#organization' },
         inLanguage: 'fr-FR',
@@ -71,143 +34,122 @@ export default function Home() {
 
   return (
     <>
+      <SeoMetadata title={pageTitle} description={pageDescription} canonicalPath="/" />
       <Helmet>
-        <title>Mon Marché Futé — Produits locaux en vente directe</title>
-        <meta name="description" content="Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale." />
-        <link rel="canonical" href="https://monmarchefute.com/" />
-        <meta property="og:title" content="Mon Marché Futé — Produits locaux en vente directe" />
-        <meta property="og:description" content="Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale." />
-        <meta property="og:url" content="https://monmarchefute.com/" />
-        <meta property="og:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Mon Marché Futé — Produits locaux en vente directe" />
-        <meta name="twitter:description" content="Achetez des fruits et légumes frais directement auprès de producteurs français. Découvrez les produits de saison et soutenez une agriculture locale." />
-        <meta name="twitter:image" content="https://monmarchefute.com/mon-marche-fute-og.png" />
         <script type="application/ld+json">{JSON.stringify(homeStructuredData).replace(/</g, '\\u003c')}</script>
       </Helmet>
+
       <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-primary-800">
-        <div className="absolute inset-0 opacity-10">
-          <img
-            src="https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg"
-            alt=""
-            className="h-full w-full object-cover"
-          />
-        </div>
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="max-w-2xl">
-            <span className="badge bg-white/20 text-white backdrop-blur-sm mb-4">
-              <Leaf className="h-3 w-3" /> Saison {seasonLabel[season]}
-            </span>
-            <span className="french-badge mb-4 ml-2">
-              Agriculture française
-            </span>
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-              Du champ à votre assiette, en vente directe
-            </h1>
-            <p className="mt-4 text-lg text-primary-100 leading-relaxed">
-              Commandez des fruits et légumes frais directement auprès de producteurs français.
-              Qualité, fraîcheur et soutien à l'agriculture française.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/catalogue/" className="btn-secondary bg-white text-primary-700 border-white hover:bg-primary-50">
-                Découvrir le catalogue <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link to="/comment-ca-marche" className="btn-outline border-white text-white hover:bg-white/10">
-                Comment ça marche
-              </Link>
+        <section className="bg-gradient-to-br from-primary-700 via-primary-600 to-primary-800">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24 lg:px-8">
+            <div className="max-w-3xl">
+              <p className="mb-5 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-semibold text-white">
+                Inscrivez-vous pour recevoir les informations sur le lancement.
+              </p>
+              <h1 className="font-serif text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
+                Des fruits et légumes à prix accessibles à Lyon
+              </h1>
+              <p className="mt-5 text-lg leading-relaxed text-primary-100 md:text-xl">
+                Des fruits et légumes commandés à l’unité auprès de producteurs, avec un retrait hebdomadaire dans le centre-ville de Lyon.
+              </p>
+              <a
+                href="#preinscription"
+                onClick={() => trackAnalyticsEvent('preregistration_cta_click', { placement: 'home_hero' })}
+                className="btn-secondary mt-8 bg-white text-primary-700 hover:bg-primary-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                Être informé du lancement
+              </a>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* How it works */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="font-serif text-3xl font-bold text-center text-stone-800 mb-12">
-          Comment ça marche ?
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            { icon: Leaf, title: 'Choisissez vos produits', desc: 'Parcourez le catalogue de fruits et légumes proposés par nos producteurs français.' },
-            { icon: Truck, title: 'Commandez en ligne', desc: 'Ajoutez au panier, choisissez votre point de retrait et votre créneau.' },
-            { icon: Heart, title: 'Dégustez !', desc: 'Recevez vos produits frais directement du producteur, prêts à être dégustés.' },
-          ].map((step, i) => (
-            <div key={i} className="text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-100 text-primary-700 mb-4">
-                <step.icon className="h-8 w-8" />
-              </div>
-              <h3 className="font-semibold text-lg text-stone-800 mb-2">{step.title}</h3>
-              <p className="text-stone-600 text-sm leading-relaxed">{step.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Featured products */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="font-serif text-3xl font-bold text-stone-800">Produits de saison</h2>
-          <Link to="/catalogue/" className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
-            Voir tout <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="card animate-pulse h-64" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Values */}
-      <section className="bg-primary-50 py-16 mt-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <h2 className="mb-10 text-center font-serif text-3xl font-bold text-stone-800">
+            Le principe
+          </h2>
+          <ol className="grid gap-8 md:grid-cols-3">
             {[
-              { icon: Shield, title: 'Qualité garantie', desc: 'Des produits frais, cultivés avec soin par des producteurs passionnés et engagés.' },
-              { icon: Leaf, title: 'Sans intermédiaires', desc: 'Achetez directement au producteur, sans intermédiaire. Une rémunération juste.' },
-              { icon: Heart, title: 'Agriculture française & durable', desc: 'Soutenez l\'agriculture française et réduisez votre empreinte carbone.' },
-            ].map((value, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-600 text-white">
-                  <value.icon className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-stone-800 mb-1">{value.title}</h3>
-                  <p className="text-sm text-stone-600 leading-relaxed">{value.desc}</p>
-                </div>
-              </div>
+              'Choix de fruits et légumes à l’unité.',
+              'Commande en ligne.',
+              'Retrait de la commande au point de retrait lyonnais, une fois par semaine.',
+            ].map((step, index) => (
+              <li key={step} className="rounded-2xl border border-stone-200 bg-white p-6 text-center shadow-sm">
+                <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 font-serif text-xl font-bold text-primary-700">
+                  {index + 1}
+                </span>
+                <p className="font-medium leading-relaxed text-stone-700">{step}</p>
+              </li>
             ))}
+          </ol>
+          <div className="mt-8 text-center">
+            <Link
+              to="/comment-ca-marche"
+              className="font-medium text-primary-700 underline hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+            >
+              Découvrir le fonctionnement du service
+            </Link>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Featured producers */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="font-serif text-3xl font-bold text-stone-800">Nos producteurs</h2>
-          <Link to="/producteurs/" className="text-sm font-semibold text-primary-600 hover:text-primary-700 flex items-center gap-1">
-            Voir tout <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredProducers.map((producer) => (
-            <ProducerCard key={producer.id} producer={producer} />
-          ))}
-        </div>
-      </section>
+        <section className="bg-primary-50 py-16">
+          <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 md:grid-cols-2 lg:px-8">
+            <div>
+              <h2 className="mb-4 font-serif text-3xl font-bold text-stone-800">Notre intention</h2>
+              <p className="leading-relaxed text-stone-700">
+                Mon marché futé vise à rendre les fruits et légumes plus accessibles grâce à une organisation simple des commandes et du retrait.
+              </p>
+            </div>
+            <div>
+              <h2 className="mb-4 font-serif text-3xl font-bold text-stone-800">Les principes du service</h2>
+              <ul className="list-disc space-y-3 pl-5 leading-relaxed text-stone-700 marker:text-primary-700">
+                <li>Des fruits et légumes commandés à l’unité.</li>
+                <li>Un premier point de retrait dans le centre-ville de Lyon.</li>
+                <li>Un retrait une fois par semaine.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
-      <section className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pb-16">
-        <NewsletterSignup />
-      </section>
+        <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+          <h2 className="mb-8 text-center font-serif text-3xl font-bold text-stone-800">
+            Questions fréquentes
+          </h2>
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-stone-800">Comment recevoir les informations sur le lancement ?</h3>
+              <p className="mt-2 leading-relaxed text-stone-600">
+                Inscrivez-vous par e-mail via le formulaire en bas de page.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-stone-800">Où se situe le point de retrait ?</h3>
+              <p className="mt-2 leading-relaxed text-stone-600">
+                Le modèle repose sur un premier point de retrait dans le centre-ville de Lyon.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-stone-800">Quel est le rythme de retrait indiqué ?</h3>
+              <p className="mt-2 leading-relaxed text-stone-600">
+                Le retrait est hebdomadaire. Les jours et horaires sont communiqués à l’avance.
+              </p>
+            </div>
+          </div>
+          <div className="mt-10 text-center">
+            <a
+              href="#preinscription"
+              onClick={() => trackAnalyticsEvent('preregistration_cta_click', { placement: 'home_faq' })}
+              className="btn-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
+            >
+              Être informé du lancement
+            </a>
+          </div>
+        </section>
+
+        <section id="preinscription" className="scroll-mt-24 px-4 pb-16 sm:px-6">
+          <div className="mx-auto max-w-3xl">
+            <NewsletterSignup />
+          </div>
+        </section>
       </div>
     </>
   );
