@@ -188,7 +188,7 @@ export default function BlogDetail() {
 
       <div className="prose prose-stone max-w-none">
         <div
-          className="font-sans text-stone-700 leading-relaxed [&_p]:mb-4 [&_u]:underline"
+          className="article-content font-sans text-stone-700"
           dangerouslySetInnerHTML={{ __html: safeArticleHtml }}
         />
       </div>

@@ -45,6 +45,25 @@ function stripHtml(value) {
   return String(value ?? '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function articleParagraphs(value) {
+  const text = String(value ?? '')
+    .replace(/<br\b[^>]*\/?>/gi, '\n')
+    .replace(/<\/(?:p|div|li|h[1-6])\s*>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'");
+  return text
+    .split(/\r?\n/)
+    .map((paragraph) => paragraph.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+    .join('');
+}
+
 function articleDescription(article) {
   if (article.slug === 'circuits-courts-un-enjeu-majeur-pour-l-agriculture-de-demain') {
     return 'Les circuits courts permettent de rapprocher producteurs et consommateurs en limitant les intermédiaires.';
@@ -628,13 +647,13 @@ for (const post of posts) {
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
     inLanguage: 'fr-FR',
   };
-  const articleContent = stripHtml(post.content);
+  const articleContent = articleParagraphs(post.content);
   const contentHtml = `<main>
     <p><time datetime="${escapeHtml(post.published_at)}">Publié le ${escapeHtml(formatPublishedDate(post.published_at))}</time></p>
     <h1>${escapeHtml(post.title)}</h1>
     <p>${escapeHtml(description)}</p>
     <p><a href="/actualites/">Toutes les actualités</a></p>
-    <div><p>${escapeHtml(articleContent)}</p></div>
+    <div class="article-content">${articleContent}</div>
     <aside>
       <p>Pour découvrir le fonctionnement des commandes et du retrait à Lyon, consultez la page <a href="/comment-ca-marche/">Comment ça marche ?</a></p>
     </aside>
