@@ -65,7 +65,7 @@ export default function RichTextEditor({ initialValue, onChange }: RichTextEdito
         contentEditable
         suppressContentEditableWarning
         onInput={(event) => onChange(event.currentTarget.innerHTML)}
-        className="input min-h-56 resize-y overflow-y-auto rounded-none border-0 focus:border-0 focus:ring-0"
+        className="article-editor input min-h-56 resize-y overflow-y-auto rounded-none border-0 focus:border-0 focus:ring-0"
         role="textbox"
         aria-label="Contenu de l’article"
         aria-multiline="true"

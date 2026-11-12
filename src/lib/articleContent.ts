@@ -1,147 +1,99 @@
-const allowedTags = new Set([
-  'P',
-  'BR',
-  'DIV',
-  'STRONG',
-  'B',
-  'EM',
-  'I',
-  'U',
-  'SPAN',
-  'FONT',
-  'H2',
-  'H3',
-  'UL',
-  'OL',
-  'LI',
-]);
-
+const inlineTags = new Set(['B', 'EM', 'I', 'STRONG', 'U']);
 const blockTags = new Set(['DIV', 'H2', 'H3', 'LI', 'OL', 'P', 'UL']);
-
-function splitParagraphAtBreaks(children: Node[], document: Document): DocumentFragment {
-  const fragment = document.createDocumentFragment();
-  let paragraph = document.createElement('p');
-
-  function flushParagraph() {
-    if (paragraph.textContent?.trim() || paragraph.querySelector('br')) {
-      fragment.appendChild(paragraph);
-    }
-    paragraph = document.createElement('p');
-  }
-
-  for (const child of children) {
-    if (child instanceof Element && child.tagName.toUpperCase() === 'BR') {
-      flushParagraph();
-    } else {
-      paragraph.appendChild(child);
-    }
-  }
-
-  flushParagraph();
-  return fragment;
-}
-
-function cleanNode(node: Node, document: Document): Node | null {
-  if (node.nodeType === Node.TEXT_NODE) return document.createTextNode(node.textContent ?? '');
-  if (!(node instanceof Element)) return null;
-
-  const tagName = node.tagName.toUpperCase();
-  const children = [...node.childNodes]
-    .map((child) => cleanNode(child, document))
-    .filter((child): child is Node => child !== null);
-
-  if (!allowedTags.has(tagName)) {
-    const fragment = document.createDocumentFragment();
-    children.forEach((child) => fragment.appendChild(child));
-    return fragment;
-  }
-
-  if ((tagName === 'P' || tagName === 'DIV') && children.some(
-    (child) => child instanceof Element && child.tagName.toUpperCase() === 'BR',
-  )) {
-    return splitParagraphAtBreaks(children, document);
-  }
-
-  if (tagName === 'SPAN' || tagName === 'FONT') {
-    const fragment = document.createDocumentFragment();
-    children.forEach((child) => fragment.appendChild(child));
-    return fragment;
-  }
-
-  if (tagName === 'DIV' && children.some(
-    (child) => child instanceof Element && blockTags.has(child.tagName.toUpperCase()),
-  )) {
-    const fragment = document.createDocumentFragment();
-    children.forEach((child) => fragment.appendChild(child));
-    return fragment;
-  }
-
-  const cleanElement = document.createElement(tagName === 'DIV' ? 'p' : tagName.toLowerCase());
-  children.forEach((child) => cleanElement.appendChild(child));
-  return cleanElement;
-}
-
-function hasVisibleContent(node: Node): boolean {
-  return Boolean(node.textContent?.trim()) || (
-    node instanceof Element && node.querySelector('br') !== null
-  );
-}
-
-function normalizeParagraphs(body: HTMLElement, document: Document): void {
-  const normalized = document.createDocumentFragment();
-  let paragraph = document.createElement('p');
-
-  function flushParagraph() {
-    if (paragraph.textContent?.trim() || paragraph.querySelector('br')) {
-      normalized.appendChild(paragraph);
-    }
-    paragraph = document.createElement('p');
-  }
-
-  for (const child of [...body.childNodes]) {
-    if (child instanceof Element && child.tagName.toUpperCase() === 'BR') {
-      flushParagraph();
-      continue;
-    }
-    if (child instanceof Element && blockTags.has(child.tagName.toUpperCase())) {
-      flushParagraph();
-      if (hasVisibleContent(child)) normalized.appendChild(child);
-    } else if (child.nodeType === Node.TEXT_NODE && !child.textContent?.trim()) {
-      continue;
-    } else {
-      paragraph.appendChild(child);
-    }
-  }
-
-  flushParagraph();
-  body.replaceChildren(normalized);
-}
 
 export function sanitizeArticleContent(value: string | null | undefined): string {
   const input = value ?? '';
   if (!input) return '';
 
   const sourceDocument = new DOMParser().parseFromString(input, 'text/html');
-  const containsHtml = /<\/?[a-z][\s\S]*>/i.test(input);
   const outputDocument = document.implementation.createHTMLDocument('');
-  const sourceNodes = containsHtml
-    ? [...sourceDocument.body.childNodes]
-    : input.split(/\r?\n/).map((line) => {
-        const paragraph = sourceDocument.createElement('p');
-        paragraph.textContent = line;
-        return paragraph;
+  const outputBody = outputDocument.body;
+  let paragraph = outputDocument.createElement('p');
+
+  function flushParagraph(): void {
+    if (paragraph.textContent?.trim()) outputBody.appendChild(paragraph);
+    paragraph = outputDocument.createElement('p');
+  }
+
+  function appendText(text: string, formatting: string[]): void {
+    if (!text.trim() && !paragraph.textContent) return;
+
+    let parent: HTMLElement = paragraph;
+    for (const tag of formatting) {
+      const wrapper = outputDocument.createElement(tag.toLowerCase());
+      parent.appendChild(wrapper);
+      parent = wrapper;
+    }
+    parent.appendChild(outputDocument.createTextNode(text));
+  }
+
+  function processNode(
+    node: Node,
+    formatting: string[] = [],
+    keepBlockInParagraph = false,
+  ): void {
+    if (node.nodeType === Node.TEXT_NODE) {
+      appendText(node.textContent ?? '', formatting);
+      return;
+    }
+    if (!(node instanceof Element)) return;
+
+    const tagName = node.tagName.toUpperCase();
+    if (tagName === 'BR') {
+      flushParagraph();
+      return;
+    }
+
+    if (tagName === 'OL' || tagName === 'UL') {
+      flushParagraph();
+      const items = [...node.children].filter((child) => child.tagName.toUpperCase() === 'LI');
+      items.forEach((item, index) => {
+        const itemText = item.textContent?.trim() ?? '';
+        const hasExistingMarker = /^(?:[-*•]|\d+[.)])\s/.test(itemText);
+        if (!hasExistingMarker) {
+          appendText(tagName === 'OL' ? `${index + 1}. ` : '• ', formatting);
+        }
+        for (const child of [...item.childNodes]) processNode(child, formatting, true);
+        flushParagraph();
       });
+      flushParagraph();
+      return;
+    }
 
-  sourceNodes
-    .map((node) => cleanNode(node, outputDocument))
-    .filter((node): node is Node => node !== null)
-    .forEach((node) => outputDocument.body.appendChild(node));
+    if (blockTags.has(tagName)) {
+      if (!keepBlockInParagraph) flushParagraph();
+      const childFormatting = tagName === 'H2' || tagName === 'H3'
+        ? [...formatting, 'strong']
+        : formatting;
+      for (const child of [...node.childNodes]) {
+        processNode(child, childFormatting, keepBlockInParagraph);
+      }
+      if (!keepBlockInParagraph) flushParagraph();
+      return;
+    }
 
-  normalizeParagraphs(outputDocument.body, outputDocument);
-  return outputDocument.body.innerHTML;
+    const childFormatting = inlineTags.has(tagName)
+      ? [...formatting, tagName.toLowerCase()]
+      : formatting;
+    for (const child of [...node.childNodes]) processNode(child, childFormatting);
+  }
+
+  const containsHtml = /<\/?[a-z][\s\S]*>/i.test(input);
+  if (containsHtml) {
+    for (const node of [...sourceDocument.body.childNodes]) processNode(node);
+  } else {
+    for (const line of input.split(/\r?\n/)) {
+      processNode(sourceDocument.createTextNode(line));
+      flushParagraph();
+    }
+  }
+
+  flushParagraph();
+  return outputBody.innerHTML;
 }
 
 export function articleContentHasText(value: string): boolean {
-  const document = new DOMParser().parseFromString(sanitizeArticleContent(value), 'text/html');
+  const sanitized = sanitizeArticleContent(value);
+  const document = new DOMParser().parseFromString(sanitized, 'text/html');
   return Boolean(document.body.textContent?.trim());
 }
