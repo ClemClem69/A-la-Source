@@ -112,7 +112,7 @@ export default function BlogDetail() {
         <SeoMetadata
           title="Article | Actualités Mon marché futé"
           description="Consultez les actualités de Mon marché futé."
-          indexable={false}
+          canonicalPath={`/actualites/${encodeURIComponent(slug ?? '')}/`}
         />
         <div className="flex min-h-[60vh] items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
