@@ -648,6 +648,14 @@ for (const post of posts) {
     inLanguage: 'fr-FR',
   };
   const articleContent = articleParagraphs(post.content);
+  const relatedPosts = publishedPosts
+    .filter((relatedPost) => relatedPost.slug !== post.slug)
+    .slice(0, 3);
+  const relatedArticlesHtml = relatedPosts.length > 0
+    ? `<ul>${relatedPosts.map((relatedPost) => (
+      `<li><a href="/actualites/${escapeHtml(encodeURIComponent(relatedPost.slug))}/">${escapeHtml(relatedPost.title)}</a></li>`
+    )).join('')}</ul>`
+    : '<p>Aucun autre article publié pour le moment.</p>';
   const contentHtml = `<main>
     <p><time datetime="${escapeHtml(post.published_at)}">Publié le ${escapeHtml(formatPublishedDate(post.published_at))}</time></p>
     <h1>${escapeHtml(post.title)}</h1>
@@ -657,6 +665,10 @@ for (const post of posts) {
     <aside>
       <p>Pour découvrir le fonctionnement des commandes et du retrait à Lyon, consultez la page <a href="/comment-ca-marche/">Comment ça marche ?</a></p>
     </aside>
+    <section aria-labelledby="related-articles-title">
+      <h2 id="related-articles-title">À lire aussi</h2>
+      ${relatedArticlesHtml}
+    </section>
   </main>`;
 
   await writePage(route, {

@@ -9,15 +9,6 @@ import type { BlogPost } from '../lib/types';
 import { formatDate } from '../lib/utils';
 import NewsletterSignup from '../components/NewsletterSignup';
 
-const relatedArticleSlugs: Record<string, string[]> = {
-  'fruits-et-legumes-de-saison-en-octobre-que-manger-en-france': [
-    'circuits-courts-un-enjeu-majeur-pour-l-agriculture-de-demain',
-  ],
-  'circuits-courts-un-enjeu-majeur-pour-l-agriculture-de-demain': [
-    'fruits-et-legumes-de-saison-en-octobre-que-manger-en-france',
-  ],
-};
-
 function stripHtml(value: string): string {
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
@@ -78,14 +69,12 @@ export default function BlogDetail() {
 
       setRelatedPosts([]);
       setRelatedPostsError(null);
-      const relatedSlugs = relatedArticleSlugs[slug] ?? [];
-      if (relatedSlugs.length === 0) return;
 
       const { data, error } = await supabase
         .from('blog_posts')
         .select('*')
         .not('published_at', 'is', null)
-        .in('slug', relatedSlugs)
+        .neq('slug', slug)
         .order('published_at', { ascending: false })
         .limit(3);
 
@@ -202,15 +191,15 @@ export default function BlogDetail() {
           .
         </p>
       </aside>
-      {relatedPostsError && (
-        <p role="alert" className="mt-8 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-          Impossible de charger les articles à lire aussi : {relatedPostsError}
-        </p>
-      )}
-
-      {relatedPosts.length > 0 && (
-        <section className="mt-10" aria-labelledby="related-articles-title">
-          <h2 id="related-articles-title" className="mb-5 font-serif text-2xl font-bold text-stone-800">À lire aussi</h2>
+      <section className="mt-10" aria-labelledby="related-articles-title">
+        <h2 id="related-articles-title" className="mb-5 font-serif text-2xl font-bold text-stone-800">À lire aussi</h2>
+        {relatedPostsError ? (
+          <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+            Impossible de charger les articles à lire aussi : {relatedPostsError}
+          </p>
+        ) : relatedPosts.length === 0 ? (
+          <p className="text-sm text-stone-500">Aucun autre article publié pour le moment.</p>
+        ) : (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {relatedPosts.map((relatedPost) => (
               <Link
@@ -239,8 +228,8 @@ export default function BlogDetail() {
               </Link>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       <div className="mt-10">
         <NewsletterSignup />
