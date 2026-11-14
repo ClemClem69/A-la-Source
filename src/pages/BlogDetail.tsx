@@ -14,17 +14,12 @@ function stripHtml(value: string): string {
 }
 
 function makeMetaDescription(
-  slug: string | undefined,
   excerpt: string | null | undefined,
   content: string | null | undefined,
 ): string {
-  if (slug === 'circuits-courts-un-enjeu-majeur-pour-l-agriculture-de-demain') {
-    return 'Les circuits courts permettent de rapprocher producteurs et consommateurs en limitant les intermédiaires.';
-  }
+  if (excerpt?.trim()) return excerpt;
 
-  const cleanExcerpt = stripHtml(excerpt ?? '');
-  const cleanContent = stripHtml(content ?? '');
-  const source = cleanExcerpt.length >= 50 ? cleanExcerpt : cleanContent || cleanExcerpt;
+  const source = stripHtml(content ?? '');
   if (!source) return 'Consultez cet article publié par Mon marché futé.';
   if (!/[.!?]$/.test(source)) {
     const sentenceEnd = source.search(/[.!?]/);
@@ -122,7 +117,7 @@ export default function BlogDetail() {
     );
   }
 
-  const description = makeMetaDescription(post.slug, post.excerpt, post.content);
+  const description = makeMetaDescription(post.excerpt, post.content);
   const canonicalUrl = `https://monmarchefute.com/actualites/${encodeURIComponent(post.slug)}/`;
   const imageUrl = post.image_url ? new URL(post.image_url, 'https://monmarchefute.com').toString() : null;
   const dateModified = (post as BlogPost & { updated_at?: string | null }).updated_at;

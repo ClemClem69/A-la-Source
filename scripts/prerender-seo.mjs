@@ -65,13 +65,9 @@ function articleParagraphs(value) {
 }
 
 function articleDescription(article) {
-  if (article.slug === 'circuits-courts-un-enjeu-majeur-pour-l-agriculture-de-demain') {
-    return 'Les circuits courts permettent de rapprocher producteurs et consommateurs en limitant les intermédiaires.';
-  }
+  if (typeof article.excerpt === 'string' && article.excerpt.trim()) return article.excerpt;
 
-  const excerpt = stripHtml(article.excerpt);
-  const content = stripHtml(article.content);
-  const source = excerpt.length >= 50 ? excerpt : content || excerpt;
+  const source = stripHtml(article.content);
   if (!source) return 'Consultez cet article publié par Mon marché futé.';
   if (!/[.!?]$/.test(source)) {
     const sentenceEnd = source.search(/[.!?]/);
